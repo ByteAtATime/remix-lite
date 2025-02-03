@@ -1,25 +1,125 @@
-export const wagmiContractConfig = {
-	address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
+export const wethContract = {
+	address: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
 	abi: [
-		{ inputs: [], stateMutability: 'nonpayable', type: 'constructor' },
+		{
+			constant: true,
+			inputs: [],
+			name: 'name',
+			outputs: [{ name: '', type: 'string' }],
+			payable: false,
+			stateMutability: 'view',
+			type: 'function'
+		},
+		{
+			constant: false,
+			inputs: [
+				{ name: 'guy', type: 'address' },
+				{ name: 'wad', type: 'uint256' }
+			],
+			name: 'approve',
+			outputs: [{ name: '', type: 'bool' }],
+			payable: false,
+			stateMutability: 'nonpayable',
+			type: 'function'
+		},
+		{
+			constant: true,
+			inputs: [],
+			name: 'totalSupply',
+			outputs: [{ name: '', type: 'uint256' }],
+			payable: false,
+			stateMutability: 'view',
+			type: 'function'
+		},
+		{
+			constant: false,
+			inputs: [
+				{ name: 'src', type: 'address' },
+				{ name: 'dst', type: 'address' },
+				{ name: 'wad', type: 'uint256' }
+			],
+			name: 'transferFrom',
+			outputs: [{ name: '', type: 'bool' }],
+			payable: false,
+			stateMutability: 'nonpayable',
+			type: 'function'
+		},
+		{
+			constant: false,
+			inputs: [{ name: 'wad', type: 'uint256' }],
+			name: 'withdraw',
+			outputs: [],
+			payable: false,
+			stateMutability: 'nonpayable',
+			type: 'function'
+		},
+		{
+			constant: true,
+			inputs: [],
+			name: 'decimals',
+			outputs: [{ name: '', type: 'uint8' }],
+			payable: false,
+			stateMutability: 'view',
+			type: 'function'
+		},
+		{
+			constant: true,
+			inputs: [{ name: '', type: 'address' }],
+			name: 'balanceOf',
+			outputs: [{ name: '', type: 'uint256' }],
+			payable: false,
+			stateMutability: 'view',
+			type: 'function'
+		},
+		{
+			constant: true,
+			inputs: [],
+			name: 'symbol',
+			outputs: [{ name: '', type: 'string' }],
+			payable: false,
+			stateMutability: 'view',
+			type: 'function'
+		},
+		{
+			constant: false,
+			inputs: [
+				{ name: 'dst', type: 'address' },
+				{ name: 'wad', type: 'uint256' }
+			],
+			name: 'transfer',
+			outputs: [{ name: '', type: 'bool' }],
+			payable: false,
+			stateMutability: 'nonpayable',
+			type: 'function'
+		},
+		{
+			constant: false,
+			inputs: [],
+			name: 'deposit',
+			outputs: [],
+			payable: true,
+			stateMutability: 'payable',
+			type: 'function'
+		},
+		{
+			constant: true,
+			inputs: [
+				{ name: '', type: 'address' },
+				{ name: '', type: 'address' }
+			],
+			name: 'allowance',
+			outputs: [{ name: '', type: 'uint256' }],
+			payable: false,
+			stateMutability: 'view',
+			type: 'function'
+		},
+		{ payable: true, stateMutability: 'payable', type: 'fallback' },
 		{
 			anonymous: false,
 			inputs: [
-				{
-					indexed: true,
-					name: 'owner',
-					type: 'address'
-				},
-				{
-					indexed: true,
-					name: 'approved',
-					type: 'address'
-				},
-				{
-					indexed: true,
-					name: 'tokenId',
-					type: 'uint256'
-				}
+				{ indexed: true, name: 'src', type: 'address' },
+				{ indexed: true, name: 'guy', type: 'address' },
+				{ indexed: false, name: 'wad', type: 'uint256' }
 			],
 			name: 'Approval',
 			type: 'event'
@@ -27,176 +127,30 @@ export const wagmiContractConfig = {
 		{
 			anonymous: false,
 			inputs: [
-				{
-					indexed: true,
-					name: 'owner',
-					type: 'address'
-				},
-				{
-					indexed: true,
-					name: 'operator',
-					type: 'address'
-				},
-				{
-					indexed: false,
-					name: 'approved',
-					type: 'bool'
-				}
-			],
-			name: 'ApprovalForAll',
-			type: 'event'
-		},
-		{
-			anonymous: false,
-			inputs: [
-				{
-					indexed: true,
-					name: 'from',
-					type: 'address'
-				},
-				{ indexed: true, name: 'to', type: 'address' },
-				{
-					indexed: true,
-					name: 'tokenId',
-					type: 'uint256'
-				}
+				{ indexed: true, name: 'src', type: 'address' },
+				{ indexed: true, name: 'dst', type: 'address' },
+				{ indexed: false, name: 'wad', type: 'uint256' }
 			],
 			name: 'Transfer',
 			type: 'event'
 		},
 		{
+			anonymous: false,
 			inputs: [
-				{ name: 'to', type: 'address' },
-				{ name: 'tokenId', type: 'uint256' }
+				{ indexed: true, name: 'dst', type: 'address' },
+				{ indexed: false, name: 'wad', type: 'uint256' }
 			],
-			name: 'approve',
-			outputs: [],
-			stateMutability: 'nonpayable',
-			type: 'function'
+			name: 'Deposit',
+			type: 'event'
 		},
 		{
-			inputs: [{ name: 'owner', type: 'address' }],
-			name: 'balanceOf',
-			outputs: [{ name: '', type: 'uint256' }],
-			stateMutability: 'view',
-			type: 'function'
-		},
-		{
-			inputs: [{ name: 'tokenId', type: 'uint256' }],
-			name: 'getApproved',
-			outputs: [{ name: '', type: 'address' }],
-			stateMutability: 'view',
-			type: 'function'
-		},
-		{
+			anonymous: false,
 			inputs: [
-				{ name: 'owner', type: 'address' },
-				{ name: 'operator', type: 'address' }
+				{ indexed: true, name: 'src', type: 'address' },
+				{ indexed: false, name: 'wad', type: 'uint256' }
 			],
-			name: 'isApprovedForAll',
-			outputs: [{ name: '', type: 'bool' }],
-			stateMutability: 'view',
-			type: 'function'
-		},
-		{
-			inputs: [],
-			name: 'mint',
-			outputs: [],
-			stateMutability: 'nonpayable',
-			type: 'function'
-		},
-		{
-			inputs: [{ internalType: 'uint256', name: 'tokenId', type: 'uint256' }],
-			name: 'mint',
-			outputs: [],
-			stateMutability: 'nonpayable',
-			type: 'function'
-		},
-		{
-			inputs: [],
-			name: 'name',
-			outputs: [{ name: '', type: 'string' }],
-			stateMutability: 'view',
-			type: 'function'
-		},
-		{
-			inputs: [{ name: 'tokenId', type: 'uint256' }],
-			name: 'ownerOf',
-			outputs: [{ name: '', type: 'address' }],
-			stateMutability: 'view',
-			type: 'function'
-		},
-		{
-			inputs: [
-				{ name: 'from', type: 'address' },
-				{ name: 'to', type: 'address' },
-				{ name: 'tokenId', type: 'uint256' }
-			],
-			name: 'safeTransferFrom',
-			outputs: [],
-			stateMutability: 'nonpayable',
-			type: 'function'
-		},
-		{
-			inputs: [
-				{ name: 'from', type: 'address' },
-				{ name: 'to', type: 'address' },
-				{ name: 'tokenId', type: 'uint256' },
-				{ name: '_data', type: 'bytes' }
-			],
-			name: 'safeTransferFrom',
-			outputs: [],
-			stateMutability: 'nonpayable',
-			type: 'function'
-		},
-		{
-			inputs: [
-				{ name: 'operator', type: 'address' },
-				{ name: 'approved', type: 'bool' }
-			],
-			name: 'setApprovalForAll',
-			outputs: [],
-			stateMutability: 'nonpayable',
-			type: 'function'
-		},
-		{
-			inputs: [{ name: 'interfaceId', type: 'bytes4' }],
-			name: 'supportsInterface',
-			outputs: [{ name: '', type: 'bool' }],
-			stateMutability: 'view',
-			type: 'function'
-		},
-		{
-			inputs: [],
-			name: 'symbol',
-			outputs: [{ name: '', type: 'string' }],
-			stateMutability: 'view',
-			type: 'function'
-		},
-		{
-			inputs: [{ name: 'tokenId', type: 'uint256' }],
-			name: 'tokenURI',
-			outputs: [{ name: '', type: 'string' }],
-			stateMutability: 'pure',
-			type: 'function'
-		},
-		{
-			inputs: [],
-			name: 'totalSupply',
-			outputs: [{ name: '', type: 'uint256' }],
-			stateMutability: 'view',
-			type: 'function'
-		},
-		{
-			inputs: [
-				{ name: 'from', type: 'address' },
-				{ name: 'to', type: 'address' },
-				{ name: 'tokenId', type: 'uint256' }
-			],
-			name: 'transferFrom',
-			outputs: [],
-			stateMutability: 'nonpayable',
-			type: 'function'
+			name: 'Withdrawal',
+			type: 'event'
 		}
 	]
 } as const;
