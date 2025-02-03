@@ -1,4 +1,5 @@
 <script lang="ts">
+	import ReadFunctionDisplay from '$lib/components/ReadFunctionDisplay.svelte';
 	import VariableDisplay from '$lib/components/VariableDisplay.svelte';
 	import { wethContract } from '$lib/contracts';
 	import { createMemoryClient, http, type AbiFunction } from 'tevm';
@@ -21,6 +22,12 @@
 			item.type === 'function' &&
 			(item.stateMutability === 'view' || item.stateMutability === 'pure') &&
 			item.inputs.length === 0
+	) as AbiFunction[];
+	const contractReadFunctions = abi.filter(
+		(item) =>
+			item.type === 'function' &&
+			(item.stateMutability === 'view' || item.stateMutability === 'pure') &&
+			item.inputs.length !== 0
 	) as AbiFunction[];
 
 	let test = $state(0);
@@ -60,5 +67,9 @@
 <div class="flex flex-col gap-4 p-8">
 	{#each contractVariables as variable}
 		<VariableDisplay {variable} address={wethContract.address} {client} />
+	{/each}
+
+	{#each contractReadFunctions as func}
+		<ReadFunctionDisplay {func} address={wethContract.address} {client} />
 	{/each}
 </div>
