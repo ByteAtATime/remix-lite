@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { isAddress } from 'viem';
+	import Input from './ui/input/input.svelte';
 
 	let {
 		value = $bindable<string | undefined>(undefined),
@@ -11,10 +12,10 @@
 
 	let isValid = $derived(value ? isAddress(value) : true);
 
-	function handleInput(e: Event) {
-		const raw = (e.target as HTMLInputElement).value.trim();
+	function handleInput(newValue: string) {
+		const raw = newValue.trim();
 		value = raw || undefined;
 	}
 </script>
 
-<input type="text" {value} oninput={handleInput} class:invalid={!isValid} placeholder="0x..." />
+<Input type="text" bind:value={() => value ?? '', handleInput} placeholder="0x..." />

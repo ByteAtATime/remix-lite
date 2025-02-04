@@ -9,6 +9,7 @@
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import { XCircle, CheckCircle2, AlertCircle } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
+	import FunctionParameters from './FunctionParameters.svelte';
 
 	type Props = {
 		func: AbiFunction;
@@ -18,7 +19,7 @@
 
 	let { func, address, client }: Props = $props();
 
-	let values = $state<Record<string, any>>({});
+	let args = $state<Record<string, any>>({});
 	let result = $state<any[]>([]);
 	let error = $state<string | null>(null);
 	let isLoading = $state(false);
@@ -26,13 +27,11 @@
 
 	$effect(() => {
 		if (func) {
-			values = Object.fromEntries(
+			args = Object.fromEntries(
 				func.inputs.map((input, i) => [input.name || `param_${i}`, undefined])
 			);
 		}
 	});
-
-	let args = $derived(func.inputs.map((input, i) => values[input.name || `param_${i}`]));
 
 	async function handleQuery() {
 		hasInteracted = true;
@@ -47,7 +46,7 @@
 				abi: [func],
 				to: address,
 				functionName: func.name,
-				args
+				args: func.inputs.map((input, i) => args[input.name || `param_${i}`])
 			});
 
 			result = Array.isArray(data) ? data : [data];
@@ -76,10 +75,8 @@
 		</div>
 
 		<div class="space-y-3">
-			{#each func.inputs as input, i}
-				{@const paramName = input.name || `param_${i}`}
-				<InputDispatcher type={input.type} name={paramName} bind:value={values[paramName]} />
-			{/each}
+			<FunctionParameters {func} bind:args />
+
 			<Button onclick={handleQuery} disabled={isLoading} class="w-full">
 				{#if isLoading}
 					Loading...

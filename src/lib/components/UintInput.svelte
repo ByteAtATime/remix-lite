@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { Input } from './ui/input';
+
 	let {
 		value = $bindable<bigint | undefined>(undefined),
 		type
@@ -9,11 +11,13 @@
 
 	let bits = $derived(type.match(/\d+/)?.[0] || '256');
 	let maxValue = $derived(BigInt(2) ** BigInt(bits) - BigInt(1));
-	let displayValue = $derived(value?.toString() || '');
+	let displayValue = $state(value?.toString() || '');
 
-	function handleInput(e: Event) {
+	function setValue(newValue: string) {
+		displayValue = newValue;
+
 		try {
-			const val = (e.target as HTMLInputElement).value.trim();
+			const val = newValue.trim();
 			if (!val) {
 				value = undefined;
 				return;
@@ -28,4 +32,4 @@
 	}
 </script>
 
-<input type="text" value={displayValue} oninput={handleInput} placeholder={`uint${bits}`} />
+<Input type="text" bind:value={() => displayValue ?? '', setValue} placeholder={`uint${bits}`} />

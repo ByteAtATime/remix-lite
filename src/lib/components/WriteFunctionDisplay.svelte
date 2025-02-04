@@ -9,6 +9,7 @@
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import { XCircle, CheckCircle2, AlertCircle } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
+	import FunctionParameters from './FunctionParameters.svelte';
 
 	type Props = {
 		func: AbiFunction;
@@ -18,7 +19,7 @@
 
 	let { func, address, client }: Props = $props();
 
-	let values = $state<Record<string, any>>({});
+	let args = $state<Record<string, any>>({});
 	let result = $state<any[]>([]);
 	let error = $state<string | null>(null);
 	let isLoading = $state(false);
@@ -27,13 +28,11 @@
 
 	$effect(() => {
 		if (func) {
-			values = Object.fromEntries(
+			args = Object.fromEntries(
 				func.inputs.map((input, i) => [input.name || `param_${i}`, undefined])
 			);
 		}
 	});
-
-	let args = $derived(func.inputs.map((input, i) => values[input.name || `param_${i}`]));
 
 	async function handleWrite() {
 		hasInteracted = true;
@@ -51,8 +50,8 @@
 				abi: [func],
 				to: address,
 				functionName: func.name,
-				args,
-				value: func.stateMutability === 'payable' ? values['value'] || 0n : 0n,
+				args: func.inputs.map((input, i) => args[input.name || `param_${i}`]),
+				value: func.stateMutability === 'payable' ? args['value'] || 0n : 0n,
 				createTransaction: true
 			});
 
@@ -80,13 +79,10 @@
 
 		<div class="space-y-3">
 			{#if func.stateMutability === 'payable'}
-				<InputDispatcher type="uint256" name="value" bind:value={values['value']} />
+				<InputDispatcher type="uint256" name="value" bind:value={args['value']} />
 			{/if}
 
-			{#each func.inputs as input, i}
-				{@const paramName = input.name || `param_${i}`}
-				<InputDispatcher type={input.type} name={paramName} bind:value={values[paramName]} />
-			{/each}
+			<FunctionParameters {func} bind:args />
 
 			<Button onclick={handleWrite} disabled={isLoading} class="w-full" variant="destructive">
 				{#if isLoading}
