@@ -7,6 +7,8 @@
 	import { untrack } from 'svelte';
 	import Skeleton from '$lib/components/ui/skeleton/skeleton.svelte';
 	import * as Avatar from '$lib/components/ui/avatar';
+	import * as ContextMenu from '$lib/components/ui/context-menu';
+	import { ExternalLink } from 'lucide-svelte';
 
 	type Props = {
 		value: string;
@@ -134,48 +136,60 @@
 	</div>
 {/snippet}
 
-<div class="relative w-full">
-	<div
-		class="flex h-10 w-full rounded-md border border-input bg-background text-base ring-offset-background md:text-sm [&:has(:focus-visible)]:outline-none [&:has(:focus-visible)]:ring-2 [&:has(:focus-visible)]:ring-ring [&:has(:focus-visible)]:ring-offset-2 [&:has([disabled])]:cursor-not-allowed [&:has([disabled])]:opacity-50"
-	>
-		{#if showPrefix}
-			<div class="flex items-center">
-				{@render inputPrefix()}
-			</div>
-		{/if}
+<ContextMenu.Root>
+	<ContextMenu.Trigger>
+		<div class="relative w-full">
+			<div
+				class="flex h-10 w-full rounded-md border border-input bg-background text-base ring-offset-background md:text-sm [&:has(:focus-visible)]:outline-none [&:has(:focus-visible)]:ring-2 [&:has(:focus-visible)]:ring-ring [&:has(:focus-visible)]:ring-offset-2 [&:has([disabled])]:cursor-not-allowed [&:has([disabled])]:opacity-50"
+			>
+				{#if showPrefix}
+					<div class="flex items-center">
+						{@render inputPrefix()}
+					</div>
+				{/if}
 
-		<input
-			bind:this={inputElement}
-			{name}
-			type="text"
-			bind:value
-			{placeholder}
-			disabled={isLoading || disabled}
-			class="w-full px-2 outline-none placeholder:text-muted-foreground focus-visible:outline-none"
-			class:pr-12={showSuffix}
-			onfocus={() => {
-				if (inputElement) {
-					const length = inputElement.value.length;
-					inputElement.setSelectionRange(length, length);
-				}
-			}}
-			oninput={() => {
-				ensAddress = undefined;
-				ensName = undefined;
-				ensAvatar = undefined;
-			}}
-		/>
-
-		{#if showSuffix}
-			<div class="mr-2 flex items-center">
-				<img
-					class="rounded-full"
-					src={blo(value as `0x${string}`)}
-					width="35"
-					height="35"
-					alt="Address identicon"
+				<input
+					bind:this={inputElement}
+					{name}
+					type="text"
+					bind:value
+					{placeholder}
+					disabled={isLoading || disabled}
+					class="w-full px-2 outline-none placeholder:text-muted-foreground focus-visible:outline-none"
+					class:pr-12={showSuffix}
+					onfocus={() => {
+						if (inputElement) {
+							const length = inputElement.value.length;
+							inputElement.setSelectionRange(length, length);
+						}
+					}}
+					oninput={() => {
+						ensAddress = undefined;
+						ensName = undefined;
+						ensAvatar = undefined;
+					}}
 				/>
+
+				{#if showSuffix}
+					<div class="mr-2 flex items-center">
+						<img
+							class="rounded-full"
+							src={blo(value as `0x${string}`)}
+							width="35"
+							height="35"
+							alt="Address identicon"
+						/>
+					</div>
+				{/if}
 			</div>
-		{/if}
-	</div>
-</div>
+		</div>
+	</ContextMenu.Trigger>
+	<ContextMenu.Content>
+		<ContextMenu.Item
+			onclick={() => window.open(`https://etherscan.io/address/${value}`, '_blank')}
+			disabled={!value || !isAddress(value)}
+		>
+			<ExternalLink class="mr-1 h-4 w-4 text-muted-foreground" /> Open in Etherscan
+		</ContextMenu.Item>
+	</ContextMenu.Content>
+</ContextMenu.Root>
