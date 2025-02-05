@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Input } from './ui/input';
+	import { Input } from '$lib/components/ui/input';
 
 	let {
 		value = $bindable<bigint | undefined>(undefined),
