@@ -4,10 +4,10 @@
 	import { normalize } from 'viem/ens';
 	import { createPublicClient, http } from 'viem';
 	import { mainnet } from 'viem/chains';
-	import { Input, inputClass } from './ui/input';
+	import { Input, inputClass } from '../ui/input';
 	import { untrack } from 'svelte';
-	import Skeleton from './ui/skeleton/skeleton.svelte';
-	import * as Avatar from './ui/avatar';
+	import Skeleton from '../ui/skeleton/skeleton.svelte';
+	import * as Avatar from '../ui/avatar';
 
 	type Props = {
 		value: string;

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import AddressInput from './AddressInput.svelte';
+	import AddressInput from './inputs/AddressInput.svelte';
 	import UintInput from './UintInput.svelte';
 	// import BoolInput from './BoolInput.svelte';
 	// import DefaultInput from './DefaultInput.svelte';
