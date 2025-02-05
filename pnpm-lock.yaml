@@ -11,6 +11,9 @@ importers:
       abitype:
         specifier: ^1.0.8
         version: 1.0.8(typescript@5.7.3)(zod@3.24.1)
+      blo:
+        specifier: ^1.2.0
+        version: 1.2.0
       tevm:
         specifier: 1.0.0-next.127
         version: 1.0.0-next.127(@tevm/ts-plugin@1.0.0-next.124(typescript@5.7.3))(typescript@5.7.3)(viem@2.22.17(typescript@5.7.3)(zod@3.24.1))(webpack@5.97.1)(zod@3.24.1)
@@ -1060,6 +1063,10 @@ packages:
     engines: {node: '>=18', pnpm: '>=8.7.0'}
     peerDependencies:
       svelte: ^5.11.0
+
+  blo@1.2.0:
+    resolution: {integrity: sha512-bZES7RzJ14B4WBT3JuOHSOAvCBmUhqznrojQ8xRjN1Fx9X9N7R+rygOFS3k4wXel2nFg4lwzL3luAYzObaDLng==}
+    engines: {node: '>=16'}
 
   brace-expansion@1.1.11:
     resolution: {integrity: sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==}
@@ -3799,6 +3806,8 @@ snapshots:
       runed: 0.23.2(svelte@5.19.6)
       svelte: 5.19.6
       svelte-toolbelt: 0.7.1(svelte@5.19.6)
+
+  blo@1.2.0: {}
 
   brace-expansion@1.1.11:
     dependencies:
