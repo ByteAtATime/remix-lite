@@ -3,7 +3,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Accordion from '$lib/components/ui/accordion';
 	import type { AbiEvent } from 'viem';
-	import { wethContract } from '$lib/contracts';
+	import { getContractAbi } from '$lib/stores/contract.svelte';
 	import CopyButton from '../CopyButton.svelte';
 
 	type Props = {
@@ -13,6 +13,7 @@
 
 	let { log, index }: Props = $props();
 	let copySuccess = $state('');
+	let abi = $derived(getContractAbi());
 
 	const truncateAddress = (address: string) => {
 		return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -42,7 +43,7 @@
 									{log.eventName}({#each Object.keys(log.args) as key, i}
 										<span>
 											<span class="text-green-600"
-												>{wethContract.abi
+												>{abi
 													.find(
 														(e): e is AbiEvent => e.type === 'event' && e.name === log.eventName
 													)

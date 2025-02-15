@@ -2,17 +2,18 @@
 	import type { ContractResult } from 'tevm';
 	import EventLog from './events/EventLog.svelte';
 	import { parseEventLogs, type Log } from 'viem';
-	import { wethContract } from '$lib/contracts';
+	import { getContractAbi } from '$lib/stores/contract.svelte';
 
 	type Props = {
 		receipt: ContractResult;
 	};
 
 	let { receipt }: Props = $props();
+	let abi = $derived(getContractAbi());
 
 	const logs = $derived(
 		parseEventLogs({
-			abi: wethContract.abi,
+			abi,
 			logs: (receipt.logs ?? []) as Log[]
 		})
 	);
