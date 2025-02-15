@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { Component } from 'svelte';
 	import AddressInput from './inputs/AddressInput.svelte';
 	import UintInput from './inputs/UintInput.svelte';
 	// import BoolInput from './BoolInput.svelte';
@@ -19,13 +20,14 @@
 		int: UintInput
 		// string: DefaultInput,
 		// bytes: DefaultInput
-	} as const;
+	} as Record<string, Component<{ value: any; type: string }, Record<string, never>, 'value'>>;
+	// TODO: is this the best type?
 
 	let baseType = $derived(type.replace(/[0-9]/g, ''));
-	let Component = $derived(componentMap[baseType as keyof typeof componentMap] || UintInput);
+	let InputComponent = $derived(componentMap[baseType as keyof typeof componentMap] || UintInput);
 </script>
 
 <label>
 	{name} ({type})
-	<Component {type} bind:value />
+	<InputComponent {type} bind:value />
 </label>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import InputDispatcher from './InputDispatcher.svelte';
 	import type { AbiFunction } from 'abitype';
-	import type { MemoryClient } from 'tevm';
+	import type { ContractResult, MemoryClient } from 'tevm';
 	import type { Address } from 'viem';
 	import { Card } from '$lib/components/ui/card';
 	import { Alert, AlertDescription } from '$lib/components/ui/alert';
@@ -10,6 +10,7 @@
 	import { XCircle, CheckCircle2, AlertCircle } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import FunctionParameters from './FunctionParameters.svelte';
+	import TransactionReceipt from './TransactionReceipt.svelte';
 
 	type Props = {
 		func: AbiFunction;
@@ -20,11 +21,11 @@
 	let { func, address, client }: Props = $props();
 
 	let args = $state<Record<string, any>>({});
-	let result = $state<any[]>([]);
+	let result = $state<string[]>([]);
 	let error = $state<string | null>(null);
 	let isLoading = $state(false);
 	let hasInteracted = $state(false);
-	let txHash = $state<string | null>(null);
+	let txReceipt = $state<ContractResult | null>(null);
 
 	$effect(() => {
 		if (func) {
@@ -34,19 +35,9 @@
 		}
 	});
 
-	async function handleWrite() {
-		hasInteracted = true;
-		isLoading = true;
-		error = null;
-		result = [];
-		txHash = null;
-
-		await executeTransaction();
-	}
-
-	async function executeTransaction() {
+	const executeTransaction = async () => {
 		try {
-			const { data } = await client.tevmContract({
+			const txReciept_ = await client.tevmContract({
 				abi: [func],
 				to: address,
 				functionName: func.name,
@@ -54,19 +45,61 @@
 				value: func.stateMutability === 'payable' ? args['value'] || 0n : 0n,
 				createTransaction: true
 			});
-
-			txHash = typeof data === 'string' ? data : null;
+			txReceipt = txReciept_;
 			error = null;
 			result = ['Transaction successful'];
 		} catch (err) {
 			error = err instanceof Error ? err.message : String(err);
 			result = [];
-			txHash = null;
-		} finally {
-			isLoading = false;
+			txReceipt = null;
 		}
-	}
+	};
+
+	const handleWrite = async () => {
+		hasInteracted = true;
+		isLoading = true;
+		error = null;
+		result = [];
+		txReceipt = null;
+		await executeTransaction();
+		await new Promise((resolve) => setTimeout(resolve, 500));
+		isLoading = false;
+	};
 </script>
+
+{#snippet loadingView()}
+	<div class="space-y-2">
+		<Skeleton class="h-8 w-full" />
+		<Skeleton class="h-8 w-3/4" />
+	</div>
+{/snippet}
+
+{#snippet errorView(error: string)}
+	<Alert variant="destructive">
+		<XCircle class="h-4 w-4" />
+		<AlertDescription>{error}</AlertDescription>
+	</Alert>
+{/snippet}
+
+{#snippet successView(txReceipt: ContractResult | null)}
+	<div class="space-y-2 rounded-lg border p-4">
+		<div class="mb-2 flex items-center gap-2">
+			<CheckCircle2 class="h-4 w-4 text-green-500" />
+			<span class="text-sm font-medium">Transaction Successful</span>
+		</div>
+
+		{#if txReceipt}
+			<TransactionReceipt receipt={txReceipt} />
+		{/if}
+	</div>
+{/snippet}
+
+{#snippet noTransactionView()}
+	<Alert>
+		<AlertCircle class="h-4 w-4" />
+		<AlertDescription>No transaction executed yet</AlertDescription>
+	</Alert>
+{/snippet}
 
 <Card class="p-4">
 	<div class="space-y-4">
@@ -94,35 +127,13 @@
 		</div>
 
 		{#if isLoading}
-			<div class="space-y-2">
-				<Skeleton class="h-8 w-full" />
-				<Skeleton class="h-8 w-3/4" />
-			</div>
+			{@render loadingView()}
 		{:else if error}
-			<Alert variant="destructive">
-				<XCircle class="h-4 w-4" />
-				<AlertDescription>{error}</AlertDescription>
-			</Alert>
+			{@render errorView(error)}
 		{:else if result.length > 0}
-			<div class="space-y-2 rounded-lg border p-4">
-				<div class="mb-2 flex items-center gap-2">
-					<CheckCircle2 class="h-4 w-4 text-green-500" />
-					<span class="text-sm font-medium">Transaction Successful</span>
-				</div>
-				{#if txHash}
-					<div class="flex flex-col space-y-1">
-						<span class="text-sm text-muted-foreground">Transaction Hash</span>
-						<code class="break-all rounded bg-muted p-2 font-mono text-sm">
-							{txHash}
-						</code>
-					</div>
-				{/if}
-			</div>
+			{@render successView(txReceipt)}
 		{:else if hasInteracted}
-			<Alert>
-				<AlertCircle class="h-4 w-4" />
-				<AlertDescription>No transaction executed yet</AlertDescription>
-			</Alert>
+			{@render noTransactionView()}
 		{/if}
 	</div>
 </Card>

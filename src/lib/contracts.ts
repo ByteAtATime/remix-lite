@@ -1,5 +1,7 @@
+import type { Abi } from 'abitype';
+
 export const wethContract = {
-	address: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+	address: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' as const,
 	abi: [
 		{
 			constant: true,
@@ -152,5 +154,5 @@ export const wethContract = {
 			name: 'Withdrawal',
 			type: 'event'
 		}
-	]
-} as const;
+	] as Abi
+};
