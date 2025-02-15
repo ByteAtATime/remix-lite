@@ -99,7 +99,7 @@
 						ensAvatar = avatar ?? undefined;
 					}
 				}
-			} catch (e) {
+			} catch {
 				error = true;
 			} finally {
 				isLoading = false;

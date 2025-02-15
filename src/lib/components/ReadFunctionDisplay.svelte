@@ -1,11 +1,9 @@
 <script lang="ts">
-	import InputDispatcher from './InputDispatcher.svelte';
 	import type { AbiFunction } from 'abitype';
 	import type { MemoryClient } from 'tevm';
 	import type { Address } from 'viem';
 	import { Card } from '$lib/components/ui/card';
 	import { Alert, AlertDescription } from '$lib/components/ui/alert';
-	import { Badge } from '$lib/components/ui/badge';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import { XCircle, CheckCircle2, AlertCircle } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -19,8 +17,8 @@
 
 	let { func, address, client }: Props = $props();
 
-	let args = $state<Record<string, any>>({});
-	let result = $state<any[]>([]);
+	let args = $state<Record<string, unknown> & { value?: bigint }>({});
+	let result = $state<unknown[]>([]);
 	let error = $state<string | null>(null);
 	let isLoading = $state(false);
 	let hasInteracted = $state(false);
@@ -59,7 +57,7 @@
 		}
 	}
 
-	function formatValue(value: any): string {
+	function formatValue(value: unknown): string {
 		if (value === null || value === undefined) return 'N/A';
 		if (typeof value === 'boolean') return value ? 'True' : 'False';
 		if (typeof value === 'bigint') return value.toString();

@@ -39,7 +39,7 @@
 							<div class="text-sm font-medium text-gray-500">Name</div>
 							<div class="text-sm">
 								<code class="font-mono">
-									{log.eventName}({#each Object.entries(log.args) as [key, value], i}
+									{log.eventName}({#each Object.keys(log.args) as key, i}
 										<span>
 											<span class="text-green-600"
 												>{wethContract.abi

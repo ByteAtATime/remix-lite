@@ -2,7 +2,6 @@
 	import type { AbiFunction } from 'abitype';
 	import type { MemoryClient } from 'tevm';
 	import type { Address } from 'viem';
-	import { RefreshCcw } from 'lucide-svelte';
 
 	type Props = {
 		variable: AbiFunction;
@@ -13,18 +12,15 @@
 	const { variable, address, client }: Props = $props();
 
 	let data = $state<unknown | null>(null);
-	let isFetching = $state(false);
 
 	const fetchData = async () => {
-		isFetching = true;
 		const result = await client.tevmContract({
 			abi: [variable],
 			to: address,
-			functionName: variable.name as any
+			functionName: variable.name
 		});
 
 		data = result.data;
-		isFetching = false;
 	};
 
 	fetchData();

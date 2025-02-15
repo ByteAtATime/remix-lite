@@ -4,7 +4,7 @@
 
 	type Props = {
 		func: AbiFunction;
-		args: Record<string, any>;
+		args: Record<string, unknown> & { value?: bigint };
 	};
 
 	let { func, args = $bindable({}) }: Props = $props();

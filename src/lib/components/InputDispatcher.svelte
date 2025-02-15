@@ -8,7 +8,7 @@
 	type Props = {
 		type: string;
 		name: string;
-		value?: any;
+		value?: unknown;
 	};
 
 	let { type, name, value = $bindable(undefined) }: Props = $props();
@@ -20,7 +20,7 @@
 		int: UintInput
 		// string: DefaultInput,
 		// bytes: DefaultInput
-	} as Record<string, Component<{ value: any; type: string }, Record<string, never>, 'value'>>;
+	} as Record<string, Component<{ value: unknown; type: string }, Record<string, never>, 'value'>>;
 	// TODO: is this the best type?
 
 	let baseType = $derived(type.replace(/[0-9]/g, ''));

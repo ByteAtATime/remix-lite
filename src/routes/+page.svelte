@@ -3,7 +3,7 @@
 	import WriteFunctionDisplay from '$lib/components/WriteFunctionDisplay.svelte';
 	import VariableDisplay from '$lib/components/VariableDisplay.svelte';
 	import { wethContract } from '$lib/contracts';
-	import { createMemoryClient, http, prefundedAccounts, type AbiFunction } from 'tevm';
+	import { createMemoryClient, http, type AbiFunction } from 'tevm';
 	import { mainnet } from 'tevm/common';
 
 	const client = createMemoryClient({

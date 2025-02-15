@@ -20,7 +20,7 @@
 
 	let { func, address, client }: Props = $props();
 
-	let args = $state<Record<string, any>>({});
+	let args = $state<Record<string, unknown> & { value?: bigint }>({});
 	let result = $state<string[]>([]);
 	let error = $state<string | null>(null);
 	let isLoading = $state(false);
@@ -42,7 +42,7 @@
 				to: address,
 				functionName: func.name,
 				args: func.inputs.map((input, i) => args[input.name || `param_${i}`]),
-				value: func.stateMutability === 'payable' ? args['value'] || 0n : 0n,
+				value: func.stateMutability === 'payable' ? (args['value'] ?? 0n) : 0n,
 				createTransaction: true
 			});
 			txReceipt = txReciept_;
