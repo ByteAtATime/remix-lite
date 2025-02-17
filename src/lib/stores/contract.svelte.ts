@@ -3,7 +3,6 @@ import type { Abi, Address } from 'abitype';
 export interface Contract {
 	address: Address;
 	abi: Abi;
-	name?: string;
 }
 
 let contract = $state<Contract | null>(null);
@@ -18,10 +17,6 @@ export function getContractAddress() {
 
 export function getContractAbi() {
 	return contract?.abi ?? [];
-}
-
-export function getContractName() {
-	return contract?.name;
 }
 
 export function setContract(newContract: Contract) {

@@ -47,35 +47,37 @@
 	<ContractInput />
 
 	{#if contract}
-		<div class="space-y-8">
-			{#if variables.length > 0}
-				<Card class="p-4">
-					<h2 class="mb-4 text-xl font-bold">Variables</h2>
-					<div class="space-y-4">
-						{#each variables as variable}
-							<VariableDisplay {variable} {address} {client} />
-						{/each}
-					</div>
-				</Card>
-			{/if}
+		{#if variables.length > 0}
+			<Card class="p-4">
+				<h2 class="mb-4 text-xl font-bold">Variables</h2>
+				<div class="space-y-4">
+					{#each variables as variable}
+						<VariableDisplay {variable} {address} {client} />
+					{/each}
+				</div>
+			</Card>
+		{/if}
 
-			{#if readFunctions.length > 0}
-				<h2 class="mb-4 text-xl font-bold">Read Functions</h2>
+		{#if readFunctions.length > 0}
+			<div>
+				<h2 class="text-xl font-bold">Read Functions</h2>
 				<div class="space-y-4">
 					{#each readFunctions as func}
 						<ReadFunctionDisplay {func} {address} {client} />
 					{/each}
 				</div>
-			{/if}
+			</div>
+		{/if}
 
-			{#if writeFunctions.length > 0}
-				<h2 class="mb-4 text-xl font-bold">Write Functions</h2>
+		{#if writeFunctions.length > 0}
+			<div>
+				<h2 class="text-xl font-bold">Write Functions</h2>
 				<div class="space-y-4">
 					{#each writeFunctions as func}
 						<WriteFunctionDisplay {func} {address} {client} />
 					{/each}
 				</div>
-			{/if}
-		</div>
+			</div>
+		{/if}
 	{/if}
 </div>
