@@ -12,7 +12,7 @@
 <Sidebar.Provider>
 	<AppSidebar {address} />
 
-	<main>
+	<main class="grow">
 		<Sidebar.Trigger />
 
 		{@render children()}
