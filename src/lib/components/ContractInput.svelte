@@ -21,6 +21,7 @@
 			currentAbi = parsed;
 			updateContract();
 		} catch (e) {
+			console.error(e);
 			error = 'Invalid ABI JSON';
 			currentAbi = null;
 		}
