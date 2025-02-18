@@ -38,7 +38,7 @@
 <div class="container mx-auto space-y-8 p-4">
 	<ContractInput />
 
-	{#if contract}
+	{#if contract && address && abi}
 		{#if variables.length > 0}
 			<Card class="p-4">
 				<h2 class="mb-4 text-xl font-bold">Variables</h2>
