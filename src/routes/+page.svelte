@@ -6,15 +6,7 @@
 	import { Card } from '$lib/components/ui/card';
 	import { getContract, getContractAbi, getContractAddress } from '$lib/stores/contract.svelte';
 	import type { AbiFunction } from 'abitype';
-	import { createMemoryClient, http } from 'tevm';
-	import { mainnet } from 'tevm/common';
-
-	const client = createMemoryClient({
-		common: mainnet,
-		fork: {
-			transport: http('https://rpc.ankr.com/eth')({})
-		}
-	});
+	import { client } from '$lib/client';
 
 	let contract = $derived(getContract());
 	let abi = $derived(getContractAbi());
