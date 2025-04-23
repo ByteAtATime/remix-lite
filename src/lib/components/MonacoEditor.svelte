@@ -160,7 +160,6 @@ contract MyContract {
 
 			setContract({ address: deployedAddress, abi });
 			deploymentStatus = `Deployed successfully at: ${deployedAddress}`;
-			console.log(`Contract deployed at: ${deployedAddress}`);
 		} catch (error: any) {
 			console.error('Deployment failed:', error);
 			const message = error?.error?.message || error.message || 'An unknown error occurred';
@@ -178,7 +177,6 @@ contract MyContract {
 			const accounts = prefundedAccounts[0];
 			if (accounts && accounts.length > 0) {
 				deployerAccount = accounts[0] as Address;
-				console.log('Using deployer account:', deployerAccount);
 			} else {
 				console.error('No accounts found in TEVM client.');
 				deploymentStatus = 'Error: No deployer accounts available in TEVM.';

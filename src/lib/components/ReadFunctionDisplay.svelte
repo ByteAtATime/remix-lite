@@ -39,7 +39,6 @@
 
 	async function fetchResults() {
 		try {
-			console.log('test');
 			const { data } = await client.tevmContract({
 				abi: [func],
 				to: address,

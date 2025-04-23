@@ -21,8 +21,6 @@ importScripts('https://binaries.soliditylang.org/bin/soljson-v0.8.29+commit.ab55
 onmessage = async (e) => {
 	const { code, id } = e.data;
 
-	console.log('Compiling code', id, code);
-
 	try {
 		const compile = self.Module.cwrap('solidity_compile', 'string', ['string', 'number']);
 		const result = {
