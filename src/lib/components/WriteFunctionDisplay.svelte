@@ -43,7 +43,7 @@
 				functionName: func.name,
 				args: func.inputs.map((input, i) => args[input.name || `param_${i}`]),
 				value: func.stateMutability === 'payable' ? (args['value'] ?? 0n) : 0n,
-				createTransaction: true
+				addToBlockchain: true
 			});
 			txReceipt = txReciept_;
 			error = null;

@@ -7,6 +7,7 @@
 	import { getContract, getContractAbi, getContractAddress } from '$lib/stores/contract.svelte';
 	import type { AbiFunction } from 'abitype';
 	import { client } from '$lib/client';
+	import MonacoEditor from '$lib/components/MonacoEditor.svelte';
 
 	let contract = $derived(getContract());
 	let abi = $derived(getContractAbi());
@@ -34,6 +35,8 @@
 		)
 	);
 </script>
+
+<MonacoEditor />
 
 <div class="container mx-auto space-y-8 p-4">
 	<ContractInput />
