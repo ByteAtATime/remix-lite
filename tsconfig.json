@@ -9,6 +9,7 @@
 		"allowJs": true,
 		"checkJs": true,
 		"esModuleInterop": true,
+		"lib": ["WebWorker"],
 		"forceConsistentCasingInFileNames": true,
 		"resolveJsonModule": true,
 		"skipLibCheck": true,

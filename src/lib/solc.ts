@@ -16,6 +16,14 @@ export type MessageResult =
 			error: unknown;
 	  };
 
+declare global {
+	interface Window {
+		Module: {
+			cwrap: (name: string, returnType: string, args: string[]) => (...args: unknown[]) => string;
+		};
+	}
+}
+
 importScripts('https://binaries.soliditylang.org/bin/soljson-v0.8.29+commit.ab55807c.js');
 
 onmessage = async (e) => {
