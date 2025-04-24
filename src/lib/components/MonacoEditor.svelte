@@ -8,6 +8,8 @@
 	import type { Abi, Address } from 'abitype';
 	import { prefundedAccounts } from 'tevm';
 	import type { MessageResult } from '$lib/solc';
+	import * as Alert from './ui/alert';
+	import { CircleX } from 'lucide-svelte';
 
 	const DEFAULT_CODE = `
 // SPDX-License-Identifier: MIT
@@ -27,6 +29,7 @@ contract MyContract {
 	let editorContainer: HTMLElement | undefined = $state();
 	let deploymentStatus = $state('');
 	let deployerAccount: Address | undefined = $state();
+	let compilationError = $state<string | null>(null);
 
 	let compilerWorker: Worker | undefined;
 
@@ -89,6 +92,7 @@ contract MyContract {
 			return;
 		}
 		deploymentStatus = 'Compiling...';
+		compilationError = null;
 		const currentCode = editor.getValue();
 		const { contractName, solidityVersion } = extractContractInfo(currentCode);
 
@@ -105,18 +109,18 @@ contract MyContract {
 			const compileResult = await compileWithWorker(currentCode);
 
 			if (!compileResult.success || !compileResult.result.data) {
-				deploymentStatus = `Compilation Error: ${
-					'error' in compileResult ? compileResult.error : 'Unknown error'
-				}`;
+				const errorMessage = 'error' in compileResult ? compileResult.error : 'Unknown error';
+				deploymentStatus = `Compilation Error: ${errorMessage}`;
+				compilationError = errorMessage as string;
 				return;
 			}
 
 			const solcOutput = compileResult.result.data;
 			if (solcOutput.errors?.some((error) => error.severity === 'error')) {
-				const errorMsg =
-					solcOutput.errors.find((e) => e.severity === 'error')?.message || 'Unknown error';
+				const error = solcOutput.errors.find((e) => e.severity === 'error');
 				console.error('Compilation errors:', solcOutput.errors);
-				deploymentStatus = `Compilation Error: ${errorMsg}`;
+				deploymentStatus = `Compilation Error: ${error?.message}`;
+				compilationError = error?.formattedMessage || 'Unknown error';
 				return;
 			}
 
@@ -126,6 +130,7 @@ contract MyContract {
 			if (!contractArtifact) {
 				console.error('Contract artifact not found in compilation result', solcOutput);
 				deploymentStatus = 'Error: Compiled contract artifact not found.';
+				compilationError = 'Compiled contract artifact not found.';
 				return;
 			}
 
@@ -134,6 +139,7 @@ contract MyContract {
 
 			if (!abi || !bytecode) {
 				deploymentStatus = 'Error: Missing ABI or bytecode in compilation result.';
+				compilationError = 'Missing ABI or bytecode in compilation result.';
 				return;
 			}
 
@@ -164,6 +170,7 @@ contract MyContract {
 			console.error('Deployment failed:', error);
 			const message = error?.error?.message || error.message || 'An unknown error occurred';
 			deploymentStatus = `Error: ${message}`;
+			compilationError = message;
 		}
 	}
 
@@ -215,3 +222,13 @@ contract MyContract {
 		<p class="text-sm text-muted-foreground">{deploymentStatus}</p>
 	{/if}
 </div>
+
+{#if compilationError}
+	<Alert.Root>
+		<CircleX class="size-4" />
+		<Alert.Title>Compilation Error</Alert.Title>
+		<Alert.Description>
+			<pre>{compilationError}</pre>
+		</Alert.Description>
+	</Alert.Root>
+{/if}
