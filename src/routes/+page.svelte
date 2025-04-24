@@ -1,5 +1,4 @@
 <script lang="ts">
-	import ContractInput from '$lib/components/ContractInput.svelte';
 	import VariableDisplay from '$lib/components/VariableDisplay.svelte';
 	import ReadFunctionDisplay from '$lib/components/ReadFunctionDisplay.svelte';
 	import WriteFunctionDisplay from '$lib/components/WriteFunctionDisplay.svelte';
@@ -39,8 +38,6 @@
 <MonacoEditor />
 
 <div class="container mx-auto space-y-8 p-4">
-	<ContractInput />
-
 	{#if contract && address && abi}
 		{#if variables.length > 0}
 			<Card class="p-4">
