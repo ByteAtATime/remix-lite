@@ -2,7 +2,7 @@
 	import type { Component } from 'svelte';
 	import AddressInput from './inputs/AddressInput.svelte';
 	import UintInput from './inputs/UintInput.svelte';
-	// import BoolInput from './BoolInput.svelte';
+	import BoolInput from './inputs/BoolInput.svelte';
 	import DefaultInput from './inputs/DefaultInput.svelte';
 
 	type Props = {
@@ -15,7 +15,7 @@
 
 	const componentMap = {
 		address: AddressInput,
-		// bool: BoolInput,
+		bool: BoolInput,
 		uint: UintInput,
 		int: UintInput,
 		string: DefaultInput
