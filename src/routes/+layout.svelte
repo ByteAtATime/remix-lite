@@ -7,6 +7,6 @@
 	const address = prefundedAccounts[0];
 </script>
 
-<main class="w-full">
+<main class="h-screen w-full">
 	{@render children()}
 </main>
