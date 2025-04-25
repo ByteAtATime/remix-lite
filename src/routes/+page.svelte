@@ -23,14 +23,18 @@
 	let variables = $derived(
 		abi.filter(
 			(item): item is AbiFunction =>
-				item.type === 'function' && item.stateMutability === 'view' && item.inputs.length === 0
+				item.type === 'function' &&
+				(item.stateMutability === 'view' || item.stateMutability === 'pure') &&
+				item.inputs.length === 0
 		)
 	);
 
 	let readFunctions = $derived(
 		abi.filter(
 			(item): item is AbiFunction =>
-				item.type === 'function' && item.stateMutability === 'view' && item.inputs.length > 0
+				item.type === 'function' &&
+				(item.stateMutability === 'view' || item.stateMutability === 'pure') &&
+				item.inputs.length > 0
 		)
 	);
 
