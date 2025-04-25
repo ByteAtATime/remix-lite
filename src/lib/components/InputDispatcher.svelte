@@ -5,6 +5,7 @@
 	import BoolInput from './inputs/BoolInput.svelte';
 	import DefaultInput from './inputs/DefaultInput.svelte';
 	import ArrayInput from './inputs/ArrayInput.svelte';
+	import BytesInput from './inputs/BytesInput.svelte';
 
 	type Props = {
 		type: string;
@@ -23,8 +24,9 @@
 		[/uint\d*/, UintInput],
 		[/int\d*/, UintInput],
 		[/string/, DefaultInput],
+		[/bytes\d*/, BytesInput],
+		[/bytes/, BytesInput],
 		[/.+\[\d*\]/, ArrayInput]
-		// bytes: DefaultInput
 	];
 
 	let InputComponent = $derived(
