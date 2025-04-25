@@ -13,6 +13,6 @@
 <div class="flex flex-col gap-2">
 	{#each func.inputs as input, i}
 		{@const paramName = input.name || `param_${i}`}
-		<InputDispatcher type={input.type} name={paramName} bind:value={args[paramName]} />
+		<InputDispatcher type={input.type} name={paramName} {input} bind:value={args[paramName]} />
 	{/each}
 </div>

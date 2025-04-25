@@ -6,18 +6,24 @@
 	import DefaultInput from './inputs/DefaultInput.svelte';
 	import ArrayInput from './inputs/ArrayInput.svelte';
 	import BytesInput from './inputs/BytesInput.svelte';
+	import StructInput from './inputs/StructInput.svelte';
+	import type { AbiParameter } from 'abitype';
 
 	type Props = {
 		type: string;
 		name: string;
+		input?: AbiParameter;
 		value?: any;
 	};
 
-	let { type, name, value = $bindable(undefined) }: Props = $props();
+	let { type, name, input, value = $bindable(undefined) }: Props = $props();
 
 	// TODO: how to avoid any here?
 	const componentMap: Array<
-		[RegExp, Component<{ value: any; type: string }, Record<string, never>, 'value'>]
+		[
+			RegExp,
+			Component<{ value: any; type: string; input?: AbiParameter }, Record<string, never>, 'value'>
+		]
 	> = [
 		[/address/, AddressInput],
 		[/bool/, BoolInput],
@@ -26,7 +32,8 @@
 		[/string/, DefaultInput],
 		[/bytes\d*/, BytesInput],
 		[/bytes/, BytesInput],
-		[/.+\[\d*\]/, ArrayInput]
+		[/.+\[\d*\]/, ArrayInput],
+		[/tuple/, StructInput]
 	];
 
 	let InputComponent = $derived(
@@ -35,6 +42,6 @@
 </script>
 
 <label>
-	{name} ({type})
-	<InputComponent {type} bind:value />
+	{name} ({input?.internalType ?? type})
+	<InputComponent {type} {input} bind:value />
 </label>
