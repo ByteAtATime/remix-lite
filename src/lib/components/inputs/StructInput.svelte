@@ -24,7 +24,7 @@
 	});
 </script>
 
-<div class="space-y-2 pl-12">
+<div class="flex flex-col gap-3 py-2 pl-12">
 	{#each input?.components ?? [] as component (component.name)}
 		{#if component.name}
 			<InputDispatcher

@@ -62,7 +62,7 @@
 	}
 </script>
 
-<div class="flex flex-col gap-3 rounded-md py-2 pl-12" onpaste={handlePaste}>
+<div class="flex flex-col gap-3 py-2 pl-12" onpaste={handlePaste}>
 	{#each value as _, index (index)}
 		<div class="flex items-end gap-2">
 			<div class="flex-1">
