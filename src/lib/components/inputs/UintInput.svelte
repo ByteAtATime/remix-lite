@@ -14,6 +14,10 @@
 	let maxValue = $derived(BigInt(2) ** BigInt(bits) - BigInt(1));
 	let displayValue = $state(value?.toString() ?? '');
 
+	$effect(() => {
+		displayValue = value?.toString() ?? '';
+	});
+
 	function parseBigInt(val: string): bigint | undefined {
 		const trimmed = val.trim();
 

@@ -4,28 +4,31 @@
 	import UintInput from './inputs/UintInput.svelte';
 	import BoolInput from './inputs/BoolInput.svelte';
 	import DefaultInput from './inputs/DefaultInput.svelte';
+	import ArrayInput from './inputs/ArrayInput.svelte';
 
 	type Props = {
 		type: string;
 		name: string;
-		value?: unknown;
+		value?: any;
 	};
 
 	let { type, name, value = $bindable(undefined) }: Props = $props();
 
-	const componentMap = {
-		address: AddressInput,
-		bool: BoolInput,
-		uint: UintInput,
-		int: UintInput,
-		string: DefaultInput
+	// TODO: how to avoid any here?
+	const componentMap: Array<
+		[RegExp, Component<{ value: any; type: string }, Record<string, never>, 'value'>]
+	> = [
+		[/address/, AddressInput],
+		[/bool/, BoolInput],
+		[/uint\d*/, UintInput],
+		[/int\d*/, UintInput],
+		[/string/, DefaultInput],
+		[/.+\[\d*\]/, ArrayInput]
 		// bytes: DefaultInput
-	} as Record<string, Component<{ value: unknown; type: string }, Record<string, never>, 'value'>>;
-	// TODO: is this the best type?
+	];
 
-	let baseType = $derived(type.replace(/[0-9]/g, ''));
 	let InputComponent = $derived(
-		componentMap[baseType as keyof typeof componentMap] || DefaultInput
+		componentMap.find(([regex]) => type.match(regex)?.[0] === type)?.[1] ?? DefaultInput
 	);
 </script>
 
