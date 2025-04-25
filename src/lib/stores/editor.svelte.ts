@@ -11,6 +11,7 @@ export type EditorState = {
 	compiledBytecode?: string;
 };
 
+const STORAGE_KEY = 'editor-state';
 const DEFAULT_CODE = `
 //SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
@@ -86,21 +87,66 @@ contract YourContract {
 }
 `.trim();
 
-let editorState: EditorState = $state({
-	code: DEFAULT_CODE,
-	deploymentStatus: '',
-	compilationError: null,
-	compiled: false
-});
+// Check if we're in a browser environment
+const isBrowser = typeof window !== 'undefined';
 
-export const getEditorState = () => editorState;
+function loadFromLocalStorage(): EditorState {
+	if (isBrowser) {
+		try {
+			const savedState = localStorage.getItem(STORAGE_KEY);
+			if (savedState) {
+				const parsed = JSON.parse(savedState);
+				// Validate the parsed state has at least a code property
+				if (parsed && typeof parsed.code === 'string') {
+					return parsed;
+				}
+			}
+		} catch (error) {
+			console.error('Failed to load editor state from localStorage:', error);
+		}
+	}
+
+	// Return default state if nothing is stored or we're not in a browser
+	return {
+		code: DEFAULT_CODE,
+		deploymentStatus: '',
+		compilationError: null,
+		compiled: false
+	};
+}
+
+let editorState: EditorState = $state(loadFromLocalStorage());
+
+function saveToLocalStorage() {
+	if (isBrowser) {
+		try {
+			localStorage.setItem(STORAGE_KEY, JSON.stringify(editorState));
+		} catch (error) {
+			console.error('Failed to save editor state to localStorage:', error);
+		}
+	}
+}
+
+export const getEditorState = (): Readonly<EditorState> => editorState;
 
 export const setEditorState = (state: EditorState) => {
 	editorState = state;
+	saveToLocalStorage();
 };
 
 export const updateEditorState = (state: Partial<EditorState>) => {
 	editorState = { ...editorState, ...state };
+	saveToLocalStorage();
+};
+
+export const resetEditorState = () => {
+	editorState = {
+		code: DEFAULT_CODE,
+		deploymentStatus: '',
+		compilationError: null,
+		compiled: false
+	};
+	saveToLocalStorage();
 };
 
 export function extractContractInfo(sourceCode: string): {

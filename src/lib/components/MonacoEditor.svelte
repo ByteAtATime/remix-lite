@@ -2,7 +2,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import type * as Monaco from 'monaco-editor/esm/vs/editor/editor.api';
 	import { solidityLanguageConfig, solidityTokensProvider } from '$lib/solidity';
-	import { getEditorState } from '$lib/stores/editor.svelte';
+	import { getEditorState, updateEditorState } from '$lib/stores/editor.svelte';
 	import { prefundedAccounts } from 'tevm';
 	import { initCompilerWorker, cleanupWorker } from '$lib/deploy';
 	import type { Address } from 'abitype';
@@ -32,14 +32,14 @@
 		try {
 			const accounts = prefundedAccounts[0];
 			if (accounts && accounts.length > 0) {
-				editorState.deployerAccount = accounts[0] as Address;
+				updateEditorState({ deployerAccount: accounts[0] as Address });
 			} else {
 				console.error('No accounts found in TEVM client.');
-				editorState.deploymentStatus = 'Error: No deployer accounts available in TEVM.';
+				updateEditorState({ deploymentStatus: 'Error: No deployer accounts available in TEVM.' });
 			}
 		} catch (error) {
 			console.error('Failed to get accounts:', error);
-			editorState.deploymentStatus = 'Error: Could not fetch accounts from TEVM.';
+			updateEditorState({ deploymentStatus: 'Error: Could not fetch accounts from TEVM.' });
 		}
 
 		monaco = (await import('$lib/monaco')).default;
@@ -56,7 +56,7 @@
 		editor.onDidChangeModelContent(() => {
 			const newCode = editor.getValue();
 			code = newCode;
-			editorState.code = newCode;
+			updateEditorState({ code: newCode });
 		});
 	});
 
