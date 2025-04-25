@@ -28,8 +28,6 @@ export async function compileCode() {
 	const { code } = getEditorState();
 	const { contractName, solidityVersion } = extractContractInfo(code);
 
-	console.log(code);
-
 	if (!contractName) {
 		updateEditorState({
 			deploymentStatus: 'Error: Could not find contract name in code',
