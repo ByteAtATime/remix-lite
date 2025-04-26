@@ -18,7 +18,8 @@
 	let abi = $derived(getContractAbi());
 	let address = $derived(getContractAddress());
 
-	const { deployerAccount, deploymentStatus, compilationError } = $derived(getEditorState());
+	const { deployerAccount, deploymentStatus, compilationError, isDeploying } =
+		$derived(getEditorState());
 
 	let variables = $derived(
 		abi.filter(
@@ -47,7 +48,6 @@
 	);
 
 	const deploy = async () => {
-		await compileCode();
 		await deployContract();
 	};
 </script>
@@ -60,7 +60,7 @@
 	<Resizable.Pane defaultSize={50} class="h-full">
 		<div class="h-full space-y-8 overflow-y-auto p-4">
 			<div class="flex w-full justify-center">
-				<Button onclick={deploy} size="lg" class="w-1/3">Deploy</Button>
+				<Button onclick={deploy} size="lg" class="w-1/3" disabled={isDeploying}>Deploy</Button>
 			</div>
 			<Card class="p-4">
 				{#if deploymentStatus}

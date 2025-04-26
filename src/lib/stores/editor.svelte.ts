@@ -5,6 +5,7 @@ import type { DevDoc, UserDoc } from '$lib/types';
 export type EditorState = {
 	code: string;
 	deploymentStatus: string;
+	isDeploying: boolean;
 	deployerAccount?: Address;
 	compilationError: string | null;
 	compiled: boolean;
@@ -113,6 +114,7 @@ function loadFromLocalStorage(): EditorState {
 	return {
 		code: DEFAULT_CODE,
 		deploymentStatus: '',
+		isDeploying: false,
 		compilationError: null,
 		compiled: false,
 		compiledDevDoc: undefined,
@@ -148,6 +150,7 @@ export const resetEditorState = () => {
 	editorState = {
 		code: DEFAULT_CODE,
 		deploymentStatus: '',
+		isDeploying: false,
 		compilationError: null,
 		compiled: false,
 		compiledDevDoc: undefined,

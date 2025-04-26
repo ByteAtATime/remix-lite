@@ -45,7 +45,11 @@ export async function compileCode() {
 	}
 
 	try {
-		updateEditorState({ deploymentStatus: 'Compiling...', compilationError: null });
+		updateEditorState({
+			deploymentStatus: 'Compiling...',
+			compilationError: null,
+			isDeploying: true
+		});
 
 		const compileResult = await compileContract(worker, code);
 
@@ -112,20 +116,26 @@ export async function compileCode() {
 }
 
 export async function deployContract() {
-	const { compiledAbi, compiledBytecode } = getEditorState();
-
-	if (!compiledAbi || !compiledBytecode) {
-		const compileSuccess = await compileCode();
-		if (!compileSuccess) return;
-	}
-
-	if (!compiledAbi || !compiledBytecode) {
-		updateEditorState({
-			deploymentStatus: 'Error: Compilation failed, no ABI or bytecode available'
-		});
-		return;
-	}
 	try {
+		updateEditorState({ isDeploying: true });
+
+		let { compiledAbi, compiledBytecode } = getEditorState();
+
+		if (!compiledAbi || !compiledBytecode) {
+			const compileSuccess = await compileCode();
+			if (!compileSuccess) {
+				return;
+			}
+			({ compiledAbi, compiledBytecode } = getEditorState());
+		}
+
+		if (!compiledAbi || !compiledBytecode) {
+			updateEditorState({
+				deploymentStatus: 'Error: Compilation failed, cannot deploy.'
+			});
+			return;
+		}
+
 		updateEditorState({ deploymentStatus: 'Deploying...' });
 
 		const deployResult = await client.tevmDeploy({
@@ -163,6 +173,8 @@ export async function deployContract() {
 					? String(error.message)
 					: 'An unknown error occurred';
 		updateEditorState({ deploymentStatus: `Error: ${message}` });
+	} finally {
+		updateEditorState({ isDeploying: false });
 	}
 }
 
