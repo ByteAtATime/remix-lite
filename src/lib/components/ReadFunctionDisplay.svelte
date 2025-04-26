@@ -67,11 +67,9 @@
 
 <Card class="p-4">
 	<div class="space-y-4">
-		<div class="flex items-center gap-2">
+		<div class="flex flex-col">
 			<h3 class="text-lg font-medium">{func.name}</h3>
-		</div>
 
-		<div class="space-y-3">
 			<FunctionParameters {func} bind:args />
 
 			<Button onclick={handleQuery} disabled={isLoading} class="w-full">

@@ -1,5 +1,6 @@
 import type { Abi, Address } from 'abitype';
 import type { MessageResult } from '$lib/solc';
+import type { DevDoc, UserDoc } from '$lib/types';
 
 export type EditorState = {
 	code: string;
@@ -9,6 +10,8 @@ export type EditorState = {
 	compiled: boolean;
 	compiledAbi?: Abi;
 	compiledBytecode?: string;
+	compiledDevDoc?: DevDoc;
+	compiledUserDoc?: UserDoc;
 };
 
 const STORAGE_KEY = 'editor-state';
@@ -111,7 +114,9 @@ function loadFromLocalStorage(): EditorState {
 		code: DEFAULT_CODE,
 		deploymentStatus: '',
 		compilationError: null,
-		compiled: false
+		compiled: false,
+		compiledDevDoc: undefined,
+		compiledUserDoc: undefined
 	};
 }
 
@@ -144,7 +149,9 @@ export const resetEditorState = () => {
 		code: DEFAULT_CODE,
 		deploymentStatus: '',
 		compilationError: null,
-		compiled: false
+		compiled: false,
+		compiledDevDoc: undefined,
+		compiledUserDoc: undefined
 	};
 	saveToLocalStorage();
 };

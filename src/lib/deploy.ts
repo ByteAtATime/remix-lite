@@ -83,6 +83,8 @@ export async function compileCode() {
 
 		const abi = contractArtifact.abi as Abi;
 		const bytecode = contractArtifact.evm.bytecode.object;
+		const devdoc = contractArtifact.devdoc;
+		const userdoc = contractArtifact.userdoc;
 
 		if (!abi || !bytecode) {
 			updateEditorState({
@@ -95,6 +97,8 @@ export async function compileCode() {
 		updateEditorState({
 			compiledAbi: abi,
 			compiledBytecode: bytecode,
+			compiledDevDoc: devdoc,
+			compiledUserDoc: userdoc,
 			deploymentStatus: 'Compilation successful'
 		});
 		return true;

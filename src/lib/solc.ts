@@ -39,7 +39,7 @@ onmessage = async (e) => {
 						settings: {
 							outputSelection: {
 								'*': {
-									'*': ['*']
+									'*': ['abi', 'evm.bytecode.object', 'devdoc', 'userdoc']
 								}
 							}
 						},

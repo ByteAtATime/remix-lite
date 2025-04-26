@@ -9,39 +9,66 @@
 	import StructInput from './inputs/StructInput.svelte';
 	import type { AbiParameter } from 'abitype';
 
-	type Props = {
+	type InputComponentProps = {
+		value: any;
 		type: string;
-		name: string;
 		input?: AbiParameter;
-		value?: any;
 	};
 
-	let { type, name, input, value = $bindable(undefined) }: Props = $props();
+	type Props = InputComponentProps & {
+		name: string;
+		paramDescription?: string;
+	};
 
-	// TODO: how to avoid any here?
-	const componentMap: Array<
-		[
-			RegExp,
-			Component<{ value: any; type: string; input?: AbiParameter }, Record<string, never>, 'value'>
-		]
-	> = [
-		[/address/, AddressInput],
-		[/bool/, BoolInput],
-		[/uint\d*/, UintInput],
-		[/int\d*/, UintInput],
-		[/string/, DefaultInput],
-		[/bytes\d*/, BytesInput],
-		[/bytes/, BytesInput],
-		[/.+\[\d*\]/, ArrayInput],
-		[/tuple/, StructInput]
+	let { type, name, input, paramDescription, value = $bindable(undefined) }: Props = $props();
+
+	type BaseInputComponent = Component<InputComponentProps, Record<string, never>, 'value'>;
+	type StructInputComponent = Component<
+		InputComponentProps & { input: AbiParameter & { components: readonly AbiParameter[] } },
+		Record<string, never>,
+		'value'
+	>;
+
+	const componentMap: Array<[RegExp, BaseInputComponent | StructInputComponent]> = [
+		[/address/, AddressInput as BaseInputComponent],
+		[/bool/, BoolInput as BaseInputComponent],
+		[/uint\d*/, UintInput as BaseInputComponent],
+		[/int\d*/, UintInput as BaseInputComponent],
+		[/string/, DefaultInput as BaseInputComponent],
+		[/bytes\d*/, BytesInput as BaseInputComponent],
+		[/bytes/, BytesInput as BaseInputComponent],
+		[/.+\[\d*\]/, ArrayInput as BaseInputComponent],
+		[/tuple/, StructInput as StructInputComponent]
 	];
 
-	let InputComponent = $derived(
-		componentMap.find(([regex]) => type.match(regex)?.[0] === type)?.[1] ?? DefaultInput
-	);
+	let InputComponent = $derived.by(() => {
+		const found = componentMap.find(([regex]) => type.match(regex)?.[0] === type);
+		return found ? found[1] : (DefaultInput as BaseInputComponent);
+	});
 </script>
 
 <label>
 	{name} ({input?.internalType ?? type})
-	<InputComponent {type} {input} bind:value />
+	{#if paramDescription}
+		<span class="block text-xs italic text-gray-500">{paramDescription}</span>
+	{/if}
+
+	<div class="mt-3">
+		{#if InputComponent === StructInput}
+			{#if input && 'components' in input}
+				{#if input.components}
+					<InputComponent
+						{type}
+						input={input as AbiParameter & { components: readonly AbiParameter[] }}
+						bind:value
+					/>
+				{/if}
+			{:else}
+				<span class="text-red-500">Error: Invalid ABI for struct input.</span>
+			{/if}
+		{:else}
+			{@const BaseComponent = InputComponent as BaseInputComponent}
+			<BaseComponent {type} {input} bind:value />
+		{/if}
+	</div>
 </label>
