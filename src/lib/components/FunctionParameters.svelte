@@ -26,6 +26,10 @@
 	<p class="mb-2 text-sm italic text-gray-600">{methodDoc.details}</p>
 {/if}
 <div class="mb-8 mt-4 flex flex-col gap-4">
+	{#if func.stateMutability === 'payable'}
+		<InputDispatcher type="uint256" name="value" bind:value={args['value']} />
+	{/if}
+
 	{#each func.inputs as input, i}
 		{@const paramName = input.name || `param_${i}`}
 		{@const paramDescription = methodDoc?.params?.[paramName]}

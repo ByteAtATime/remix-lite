@@ -111,10 +111,6 @@
 		</div>
 
 		<div class="space-y-3">
-			{#if func.stateMutability === 'payable'}
-				<InputDispatcher type="uint256" name="value" bind:value={args['value']} />
-			{/if}
-
 			<FunctionParameters {func} bind:args />
 
 			<Button onclick={handleWrite} disabled={isLoading} class="w-full" variant="destructive">
