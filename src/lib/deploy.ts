@@ -9,10 +9,25 @@ import {
 } from '$lib/stores/editor.svelte';
 
 let compilerWorker: Worker | undefined;
+const COMPILER_URL = 'https://binaries.soliditylang.org/bin/soljson-v0.8.29+commit.ab55807c.js';
 
 export function initCompilerWorker() {
 	if (typeof window !== 'undefined' && !compilerWorker) {
-		compilerWorker = new Worker(new URL('$lib/solc?worker', import.meta.url));
+		if ('caches' in window) {
+			caches.open('remix-lite-resources-v1').then((cache) => {
+				fetch(COMPILER_URL, { cache: 'force-cache' })
+					.then((response) => {
+						if (response.ok) {
+							cache.put(COMPILER_URL, response.clone());
+						}
+					})
+					.catch((err) => console.warn('Failed to precache Solidity compiler:', err));
+			});
+		}
+
+		compilerWorker = new Worker(new URL('$lib/solc?worker', import.meta.url), {
+			credentials: 'same-origin'
+		});
 		return compilerWorker;
 	}
 	return compilerWorker;

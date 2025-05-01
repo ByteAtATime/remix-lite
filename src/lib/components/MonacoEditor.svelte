@@ -10,12 +10,15 @@
 	let editor: Monaco.editor.IStandaloneCodeEditor;
 	let monaco: typeof Monaco;
 	let editorContainer: HTMLElement | undefined = $state();
+	let monacoLoaded = $state(false);
 
 	const editorState = getEditorState();
 
 	let { code = $bindable(editorState.code) } = $props();
 
 	$effect(() => {
+		if (!monacoLoaded) return;
+
 		code = editorState.code;
 		monaco?.editor.getEditors().forEach((editor) => {
 			if (editor.getModel()?.getValue() !== code) {
@@ -24,9 +27,36 @@
 		});
 	});
 
-	onMount(async () => {
+	async function loadMonaco() {
 		if (!editorContainer) return;
 
+		try {
+			monaco = (await import('$lib/monaco')).default;
+
+			editor = monaco.editor.create(editorContainer, {
+				automaticLayout: true
+			});
+			monaco.languages.register({ id: 'solidity' });
+			monaco.languages.setMonarchTokensProvider('solidity', solidityTokensProvider as any);
+			monaco.languages.setLanguageConfiguration('solidity', solidityLanguageConfig as any);
+
+			const model = monaco.editor.createModel(code, 'solidity');
+			editor.setModel(model);
+			monaco.editor.setTheme('vs-dark');
+
+			editor.onDidChangeModelContent(() => {
+				const newCode = editor.getValue();
+				code = newCode;
+				updateEditorState({ code: newCode });
+			});
+
+			monacoLoaded = true;
+		} catch (error) {
+			console.error('Failed to load Monaco editor:', error);
+		}
+	}
+
+	onMount(async () => {
 		initCompilerWorker();
 
 		try {
@@ -42,22 +72,7 @@
 			updateEditorState({ deploymentStatus: 'Error: Could not fetch accounts from TEVM.' });
 		}
 
-		monaco = (await import('$lib/monaco')).default;
-
-		editor = monaco.editor.create(editorContainer, {
-			automaticLayout: true
-		});
-		monaco.languages.register({ id: 'solidity' });
-		monaco.languages.setMonarchTokensProvider('solidity', solidityTokensProvider as any);
-		monaco.languages.setLanguageConfiguration('solidity', solidityLanguageConfig as any);
-		const model = monaco.editor.createModel(code, 'solidity');
-		editor.setModel(model);
-		monaco.editor.setTheme('vs-dark');
-		editor.onDidChangeModelContent(() => {
-			const newCode = editor.getValue();
-			code = newCode;
-			updateEditorState({ code: newCode });
-		});
+		await loadMonaco();
 	});
 
 	onDestroy(() => {

@@ -50,6 +50,49 @@
 	const deploy = async () => {
 		await deployContract();
 	};
+
+	let pwaStatus = $state('Loading...');
+	let cacheStatus = $state(false);
+
+	$effect(() => {
+		if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+			if (navigator.serviceWorker.controller) {
+				pwaStatus = 'Service worker active';
+				checkCache();
+			} else {
+				pwaStatus = 'Service worker registering...';
+				navigator.serviceWorker.ready.then(() => {
+					pwaStatus = 'Service worker ready';
+					checkCache();
+				});
+			}
+		} else {
+			pwaStatus = 'Service worker not supported';
+		}
+	});
+
+	async function checkCache() {
+		if ('caches' in window) {
+			try {
+				const cache = await caches.open('remix-lite-resources-v1');
+				const keys = await cache.keys();
+
+				// Check if we have Monaco or Solidity compiler in cache
+				const hasMonaco = keys.some((request) => request.url.includes('monaco-editor'));
+				const hasSolc = keys.some(
+					(request) =>
+						request.url.includes('soljson-v') ||
+						request.url ===
+							'https://binaries.soliditylang.org/bin/soljson-v0.8.29+commit.ab55807c.js'
+				);
+
+				cacheStatus = hasMonaco || hasSolc;
+			} catch (e) {
+				console.error('Cache check failed:', e);
+				cacheStatus = false;
+			}
+		}
+	}
 </script>
 
 <Resizable.PaneGroup direction="horizontal" class="h-full w-full">
@@ -115,3 +158,11 @@
 		</div>
 	</Resizable.Pane>
 </Resizable.PaneGroup>
+
+<!-- Add a small indicator at the bottom of the page -->
+<div
+	class="pwa-status fixed bottom-2 right-2 rounded bg-gray-800 p-1 text-xs text-gray-300 opacity-70 transition-opacity hover:opacity-100"
+>
+	<div>PWA: {pwaStatus}</div>
+	<div>Cache: {cacheStatus ? 'Assets cached' : 'Not cached'}</div>
+</div>

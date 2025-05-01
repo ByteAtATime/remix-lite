@@ -24,7 +24,9 @@ declare global {
 	}
 }
 
-importScripts('https://binaries.soliditylang.org/bin/soljson-v0.8.29+commit.ab55807c.js');
+const COMPILER_URL = 'https://binaries.soliditylang.org/bin/soljson-v0.8.29+commit.ab55807c.js';
+
+importScripts(COMPILER_URL);
 
 onmessage = async (e) => {
 	const { code, id } = e.data;
