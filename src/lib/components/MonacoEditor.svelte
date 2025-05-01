@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy, onMount, untrack } from 'svelte';
 	import type * as Monaco from 'monaco-editor/esm/vs/editor/editor.api';
 	import { solidityLanguageConfig, solidityTokensProvider } from '$lib/solidity';
 	import { getEditorState, updateEditorState } from '$lib/stores/editor.svelte';
@@ -18,12 +18,15 @@
 
 	$effect(() => {
 		if (!monacoLoaded) return;
+		editorState.code;
 
-		code = editorState.code;
-		monaco?.editor.getEditors().forEach((editor) => {
-			if (editor.getModel()?.getValue() !== code) {
-				editor.getModel()?.setValue(code);
-			}
+		untrack(() => {
+			code = editorState.code;
+			monaco?.editor.getEditors().forEach((editor) => {
+				if (editor.getModel()?.getValue() !== code) {
+					editor.getModel()?.setValue(code);
+				}
+			});
 		});
 	});
 
@@ -44,10 +47,11 @@
 			editor.setModel(model);
 			monaco.editor.setTheme('vs-dark');
 
-			editor.onDidChangeModelContent(() => {
-				const newCode = editor.getValue();
+			editor.onDidChangeModelContent((e) => {
+				const newCode = editor.getModel()?.getValue();
 				code = newCode;
 				updateEditorState({ code: newCode });
+				console.log(newCode);
 			});
 
 			monacoLoaded = true;
