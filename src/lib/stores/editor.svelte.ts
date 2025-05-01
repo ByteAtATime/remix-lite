@@ -15,7 +15,7 @@ export type EditorState = {
 	compiledUserDoc?: UserDoc;
 };
 
-const STORAGE_KEY = 'editor-state';
+const CODE_STORAGE_KEY = 'editor-code';
 const DEFAULT_CODE = `
 //SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
@@ -91,45 +91,45 @@ contract YourContract {
 }
 `.trim();
 
-// Check if we're in a browser environment
+const defaultState: Omit<EditorState, 'code'> = {
+	deploymentStatus: '',
+	isDeploying: false,
+	compilationError: null,
+	compiled: false,
+	compiledDevDoc: undefined,
+	compiledUserDoc: undefined
+};
+
 const isBrowser = typeof window !== 'undefined';
 
-function loadFromLocalStorage(): EditorState {
+function loadInitialState(): EditorState {
+	let code = DEFAULT_CODE;
+
 	if (isBrowser) {
 		try {
-			const savedState = localStorage.getItem(STORAGE_KEY);
-			if (savedState) {
-				const parsed = JSON.parse(savedState);
-				// Validate the parsed state has at least a code property
-				if (parsed && typeof parsed.code === 'string') {
-					return parsed;
-				}
+			const savedCode = localStorage.getItem(CODE_STORAGE_KEY);
+			if (savedCode) {
+				code = savedCode;
 			}
 		} catch (error) {
-			console.error('Failed to load editor state from localStorage:', error);
+			console.error('Failed to load editor code from localStorage:', error);
 		}
 	}
 
-	// Return default state if nothing is stored or we're not in a browser
 	return {
-		code: DEFAULT_CODE,
-		deploymentStatus: '',
-		isDeploying: false,
-		compilationError: null,
-		compiled: false,
-		compiledDevDoc: undefined,
-		compiledUserDoc: undefined
+		...defaultState,
+		code: code
 	};
 }
 
-let editorState: EditorState = $state(loadFromLocalStorage());
+let editorState: EditorState = $state(loadInitialState());
 
-function saveToLocalStorage() {
+function saveCodeToLocalStorage() {
 	if (isBrowser) {
 		try {
-			localStorage.setItem(STORAGE_KEY, JSON.stringify(editorState));
+			localStorage.setItem(CODE_STORAGE_KEY, editorState.code);
 		} catch (error) {
-			console.error('Failed to save editor state to localStorage:', error);
+			console.error('Failed to save editor code to localStorage:', error);
 		}
 	}
 }
@@ -138,25 +138,29 @@ export const getEditorState = (): Readonly<EditorState> => editorState;
 
 export const setEditorState = (state: EditorState) => {
 	editorState = state;
-	saveToLocalStorage();
+	saveCodeToLocalStorage();
 };
 
 export const updateEditorState = (state: Partial<EditorState>) => {
 	editorState = { ...editorState, ...state };
-	saveToLocalStorage();
+	if (state.code !== undefined) {
+		saveCodeToLocalStorage();
+	}
 };
 
 export const resetEditorState = () => {
 	editorState = {
+		...defaultState,
 		code: DEFAULT_CODE,
-		deploymentStatus: '',
-		isDeploying: false,
-		compilationError: null,
-		compiled: false,
-		compiledDevDoc: undefined,
-		compiledUserDoc: undefined
+		deployerAccount: editorState.deployerAccount
 	};
-	saveToLocalStorage();
+	if (isBrowser) {
+		try {
+			localStorage.removeItem(CODE_STORAGE_KEY);
+		} catch (error) {
+			console.error('Failed to remove editor code from localStorage:', error);
+		}
+	}
 };
 
 export function extractContractInfo(sourceCode: string): {
