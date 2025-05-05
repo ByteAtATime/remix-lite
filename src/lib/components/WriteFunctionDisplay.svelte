@@ -1,5 +1,4 @@
 <script lang="ts">
-	import InputDispatcher from './InputDispatcher.svelte';
 	import type { AbiFunction } from 'abitype';
 	import type { ContractResult, MemoryClient } from 'tevm';
 	import type { Address } from 'viem';

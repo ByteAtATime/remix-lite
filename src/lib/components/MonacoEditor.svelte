@@ -6,8 +6,6 @@
 	import { prefundedAccounts } from 'tevm';
 	import { initCompilerWorker, cleanupWorker } from '$lib/deploy';
 	import type { Address } from 'abitype';
-	import { Button } from '$lib/components/ui/button';
-	import { Share2 } from 'lucide-svelte';
 
 	let editor: Monaco.editor.IStandaloneCodeEditor;
 	let monaco: typeof Monaco;
@@ -49,7 +47,7 @@
 			editor.setModel(model);
 			monaco.editor.setTheme('vs-dark');
 
-			editor.onDidChangeModelContent((e) => {
+			editor.onDidChangeModelContent(() => {
 				const newCode = editor.getModel()?.getValue();
 				code = newCode;
 				updateEditorState({ code: newCode });

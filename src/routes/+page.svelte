@@ -12,16 +12,15 @@
 	import * as Alert from '$lib/components/ui/alert';
 	import { CircleX } from 'lucide-svelte';
 	import { getEditorState, updateEditorState } from '$lib/stores/editor.svelte';
-	import { compileCode, deployContract } from '$lib/deploy';
-	import { onMount } from 'svelte';
+	import { deployContract } from '$lib/deploy';
 	import { page } from '$app/stores';
-	import { afterNavigate, replaceState } from '$app/navigation';
+	import { afterNavigate } from '$app/navigation';
 
 	let contract = $derived(getContract());
 	let abi = $derived(getContractAbi());
 	let address = $derived(getContractAddress());
 
-	const { deployerAccount, deploymentStatus, compilationError, isDeploying } =
+	const { deploymentStatus, compilationError, isDeploying } =
 		$derived(getEditorState());
 
 	let variables = $derived(
