@@ -11,8 +11,11 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Alert from '$lib/components/ui/alert';
 	import { CircleX } from 'lucide-svelte';
-	import { getEditorState } from '$lib/stores/editor.svelte';
+	import { getEditorState, updateEditorState } from '$lib/stores/editor.svelte';
 	import { compileCode, deployContract } from '$lib/deploy';
+	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
+	import { afterNavigate, replaceState } from '$app/navigation';
 
 	let contract = $derived(getContract());
 	let abi = $derived(getContractAbi());
@@ -93,6 +96,29 @@
 			}
 		}
 	}
+
+	const loadCodeFromQueryParam = () => {
+		if ($page.url.hash) {
+			const match = $page.url.hash.match(/code=([^&]+)/);
+			if (match && match[1]) {
+				try {
+					const decodedCode = decodeURIComponent(atob(match[1]));
+					updateEditorState({ code: decodedCode });
+
+					const newUrl = new URL(window.location.href);
+					newUrl.hash = '';
+					// TODO: this isn't good practice, but the one from $app/navigation doesn't work
+					window.history.replaceState({}, '', newUrl.toString());
+				} catch (error) {
+					console.error('Failed to decode base64 code from URL:', error);
+				}
+			}
+		}
+	};
+
+	afterNavigate(() => {
+		loadCodeFromQueryParam();
+	});
 </script>
 
 <Resizable.PaneGroup direction="horizontal" class="h-full w-full">

@@ -6,19 +6,21 @@
 	import { prefundedAccounts } from 'tevm';
 	import { initCompilerWorker, cleanupWorker } from '$lib/deploy';
 	import type { Address } from 'abitype';
+	import { Button } from '$lib/components/ui/button';
+	import { Share2 } from 'lucide-svelte';
 
 	let editor: Monaco.editor.IStandaloneCodeEditor;
 	let monaco: typeof Monaco;
 	let editorContainer: HTMLElement | undefined = $state();
 	let monacoLoaded = $state(false);
 
-	const editorState = getEditorState();
+	const editorState = $derived(getEditorState());
 
 	let { code = $bindable(editorState.code) } = $props();
 
 	$effect(() => {
 		if (!monacoLoaded) return;
-		editorState.code;
+		editorState;
 
 		untrack(() => {
 			code = editorState.code;
@@ -51,7 +53,6 @@
 				const newCode = editor.getModel()?.getValue();
 				code = newCode;
 				updateEditorState({ code: newCode });
-				console.log(newCode);
 			});
 
 			monacoLoaded = true;
