@@ -8,19 +8,21 @@
 	import { client } from '$lib/client';
 	import MonacoEditor from '$lib/components/MonacoEditor.svelte';
 	import * as Resizable from '$lib/components/ui/resizable/index.js';
-	import { Button } from '$lib/components/ui/button';
+	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Alert from '$lib/components/ui/alert';
 	import { CircleX } from 'lucide-svelte';
 	import { getEditorState, updateEditorState } from '$lib/stores/editor.svelte';
-	import { deployContract } from '$lib/deploy';
+	import { deployContract, compileCode } from '$lib/deploy';
 	import { page } from '$app/stores';
 	import { afterNavigate } from '$app/navigation';
+	import * as Dialog from '$lib/components/ui/dialog/index.js';
+	import FunctionParameters from '$lib/components/FunctionParameters.svelte';
 
 	let contract = $derived(getContract());
 	let abi = $derived(getContractAbi());
 	let address = $derived(getContractAddress());
 
-	const { deploymentStatus, compilationError, isDeploying } =
+	const { deploymentStatus, compilationError, isDeploying, compiledAbi } =
 		$derived(getEditorState());
 
 	let variables = $derived(
@@ -49,8 +51,53 @@
 		)
 	);
 
+	let constructor = $derived(
+		compiledAbi?.find((item): item is AbiFunction => item.type === 'constructor') as
+			| AbiFunction
+			| undefined
+	);
+
+	let showConstructorDialog = $state(false);
+	let constructorArgs = $state<Record<string, unknown>>({});
+
 	const deploy = async () => {
-		await deployContract();
+		updateEditorState({ isDeploying: true });
+
+		let { compiledAbi, compiledBytecode } = getEditorState();
+		console.log('a');
+
+		if (!compiledAbi || !compiledBytecode) {
+			const compileSuccess = await compileCode();
+			console.log('b');
+			if (!compileSuccess) {
+				updateEditorState({ isDeploying: false });
+				return;
+			}
+			console.log('c');
+			({ compiledAbi } = getEditorState());
+		}
+
+		console.log('d');
+
+		const constructorDef = compiledAbi?.find(
+			(item): item is AbiFunction => item.type === 'constructor'
+		) as AbiFunction | undefined;
+
+		if (constructorDef && constructorDef.inputs.length > 0) {
+			showConstructorDialog = true;
+			console.log(showConstructorDialog);
+			updateEditorState({ isDeploying: false });
+		} else {
+			console.log('f');
+			await deployContract();
+		}
+	};
+
+	const deployWithArgs = async () => {
+		const args =
+			constructor?.inputs.map((input, i) => constructorArgs[input.name || `param_${i}`]) || [];
+		await deployContract(args);
+		showConstructorDialog = false;
 	};
 
 	let pwaStatus = $state('Loading...');
@@ -194,6 +241,24 @@
 		</div>
 	</Resizable.Pane>
 </Resizable.PaneGroup>
+
+<Dialog.Root bind:open={showConstructorDialog}>
+	<Dialog.Content class="sm:max-w-[500px]">
+		<Dialog.Header>
+			<Dialog.Title>Constructor Arguments</Dialog.Title>
+			<Dialog.Description>Enter the arguments for the contract constructor</Dialog.Description>
+		</Dialog.Header>
+
+		{#if constructor}
+			<FunctionParameters func={constructor} bind:args={constructorArgs} />
+		{/if}
+
+		<Dialog.Footer>
+			<Dialog.Close class={buttonVariants({ variant: 'outline' })}>Cancel</Dialog.Close>
+			<Button onclick={deployWithArgs}>Deploy Contract</Button>
+		</Dialog.Footer>
+	</Dialog.Content>
+</Dialog.Root>
 
 <!-- Add a small indicator at the bottom of the page -->
 <div

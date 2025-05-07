@@ -130,7 +130,7 @@ export async function compileCode() {
 	}
 }
 
-export async function deployContract() {
+export async function deployContract(constructorArgs?: unknown[]) {
 	try {
 		updateEditorState({ isDeploying: true });
 
@@ -156,7 +156,8 @@ export async function deployContract() {
 		const deployResult = await client.tevmDeploy({
 			abi: compiledAbi,
 			bytecode: `0x${compiledBytecode}`,
-			addToBlockchain: true
+			addToBlockchain: true,
+			args: constructorArgs
 		});
 
 		if (deployResult.errors && deployResult.errors.length > 0) {
