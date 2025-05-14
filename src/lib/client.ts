@@ -4,6 +4,6 @@ import { mainnet } from 'tevm/common';
 export const client = createMemoryClient({
 	common: mainnet,
 	fork: {
-		transport: http('https://ethereum-rpc.publicnode.com')({})
+		transport: http('https://eth.drpc.org')({})
 	}
 });
