@@ -10,13 +10,14 @@
 	import * as Resizable from '$lib/components/ui/resizable/index.js';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Alert from '$lib/components/ui/alert';
-	import { CircleX } from 'lucide-svelte';
+	import { CircleX, Copy, Check } from 'lucide-svelte';
 	import { getEditorState, updateEditorState } from '$lib/stores/editor.svelte';
 	import { deployContract, compileCode } from '$lib/deploy';
 	import { page } from '$app/stores';
 	import { afterNavigate } from '$app/navigation';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import FunctionParameters from '$lib/components/FunctionParameters.svelte';
+	import { toast } from 'svelte-sonner';
 
 	let contract = $derived(getContract());
 	let abi = $derived(getContractAbi());
@@ -24,6 +25,8 @@
 
 	const { deploymentStatus, compilationError, isDeploying, compiledAbi } =
 		$derived(getEditorState());
+
+	let isCopying = $state(false);
 
 	let variables = $derived(
 		abi.filter(
@@ -98,6 +101,29 @@
 			constructor?.inputs.map((input, i) => constructorArgs[input.name || `param_${i}`]) || [];
 		await deployContract(args);
 		showConstructorDialog = false;
+	};
+
+	const copyAbi = async () => {
+		if (compiledAbi) {
+			try {
+				await navigator.clipboard.writeText(JSON.stringify(compiledAbi, null, 2));
+				isCopying = true;
+				setTimeout(() => {
+					isCopying = false;
+				}, 2000);
+				toast.success({
+					title: 'ABI Copied',
+					description: 'Contract ABI has been copied to clipboard'
+				});
+			} catch (error) {
+				console.error('Failed to copy ABI:', error);
+				toast.success({
+					variant: 'destructive',
+					title: 'Failed to copy',
+					description: 'Could not copy ABI to clipboard'
+				});
+			}
+		}
 	};
 
 	let pwaStatus = $state('Loading...');
@@ -178,9 +204,24 @@
 				<Button onclick={deploy} size="lg" class="w-1/3" disabled={isDeploying}>Deploy</Button>
 			</div>
 			<Card class="p-4">
-				{#if deploymentStatus}
-					<p class="text-sm text-muted-foreground">{deploymentStatus}</p>
-				{/if}
+				<div class="flex items-center justify-between">
+					<div>
+						{#if deploymentStatus}
+							<p class="text-sm text-muted-foreground">{deploymentStatus}</p>
+						{/if}
+					</div>
+					{#if compiledAbi && !compilationError}
+						<Button variant="outline" size="sm" class="ml-auto flex gap-1" onclick={copyAbi}>
+							{#if isCopying}
+								<Check class="size-4" />
+								Copied
+							{:else}
+								<Copy class="size-4" />
+								Copy ABI
+							{/if}
+						</Button>
+					{/if}
+				</div>
 
 				{#if compilationError}
 					<Alert.Root class="mt-4">

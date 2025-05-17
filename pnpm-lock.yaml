@@ -78,6 +78,9 @@ importers:
       lucide-svelte:
         specifier: ^0.474.0
         version: 0.474.0(svelte@5.28.2)
+      mode-watcher:
+        specifier: ^1.0.7
+        version: 1.0.7(svelte@5.28.2)
       paneforge:
         specifier: 1.0.0-next.5
         version: 1.0.0-next.5(svelte@5.28.2)
@@ -96,6 +99,9 @@ importers:
       svelte-check:
         specifier: ^4.0.0
         version: 4.1.4(picomatch@4.0.2)(svelte@5.28.2)(typescript@5.7.3)
+      svelte-sonner:
+        specifier: ^1.0.1
+        version: 1.0.1(svelte@5.28.2)
       tailwind-merge:
         specifier: ^3.0.1
         version: 3.0.1
@@ -2296,6 +2302,11 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
+  mode-watcher@1.0.7:
+    resolution: {integrity: sha512-ZGA7ZGdOvBJeTQkzdBOnXSgTkO6U6iIFWJoyGCTt6oHNg9XP9NBvS26De+V4W2aqI+B0yYXUskFG2VnEo3zyMQ==}
+    peerDependencies:
+      svelte: ^5.27.0
+
   monaco-editor@0.52.2:
     resolution: {integrity: sha512-GEQWEZmfkOGLdd3XK8ryrfWz3AIP8YymVXiPHEdewrUq7mh0qrKrfHLNCXcbB6sTnMLnOZ3ztSiKcciFUkIJwQ==}
 
@@ -2821,6 +2832,16 @@ packages:
     peerDependencies:
       svelte: ^5.7.0
 
+  runed@0.25.0:
+    resolution: {integrity: sha512-7+ma4AG9FT2sWQEA0Egf6mb7PBT2vHyuHail1ie8ropfSjvZGtEAx8YTmUjv/APCsdRRxEVvArNjALk9zFSOrg==}
+    peerDependencies:
+      svelte: ^5.7.0
+
+  runed@0.26.0:
+    resolution: {integrity: sha512-qWFv0cvLVRd8pdl/AslqzvtQyEn5KaIugEernwg9G98uJVSZcs/ygvPBvF80LA46V8pwRvSKnaVLDI3+i2wubw==}
+    peerDependencies:
+      svelte: ^5.7.0
+
   rustbn-wasm@0.4.0:
     resolution: {integrity: sha512-C2ujvPv05hXC69MD7YwSsoUEsT/X/dKHkkgwN9B0ZTgb0OXDC9yaHhE6Pq+uaRAzMyW0Y97bwc4JO4cqPDzVuQ==}
 
@@ -3055,6 +3076,11 @@ packages:
     peerDependenciesMeta:
       svelte:
         optional: true
+
+  svelte-sonner@1.0.1:
+    resolution: {integrity: sha512-vz0eqcs9GNnJ2CTtTno7v/jSA0P3r+X+3y/hrJg+FPpB2rZCFywIKNKD3wiRI8449i3LXVcgQ+q5R5ocOd6ydA==}
+    peerDependencies:
+      svelte: ^5.0.0
 
   svelte-toolbelt@0.7.1:
     resolution: {integrity: sha512-HcBOcR17Vx9bjaOceUvxkY3nGmbBmCBBbuWLLEWO6jtmWH8f/QoWmbyUfQZrpDINH39en1b8mptfPQT9VKQ1xQ==}
@@ -6561,6 +6587,12 @@ snapshots:
 
   mkdirp@3.0.1: {}
 
+  mode-watcher@1.0.7(svelte@5.28.2):
+    dependencies:
+      runed: 0.25.0(svelte@5.28.2)
+      svelte: 5.28.2
+      svelte-toolbelt: 0.7.1(svelte@5.28.2)
+
   monaco-editor@0.52.2: {}
 
   mri@1.2.0: {}
@@ -7065,6 +7097,16 @@ snapshots:
       esm-env: 1.2.2
       svelte: 5.28.2
 
+  runed@0.25.0(svelte@5.28.2):
+    dependencies:
+      esm-env: 1.2.2
+      svelte: 5.28.2
+
+  runed@0.26.0(svelte@5.28.2):
+    dependencies:
+      esm-env: 1.2.2
+      svelte: 5.28.2
+
   rustbn-wasm@0.4.0:
     dependencies:
       '@scure/base': 1.2.4
@@ -7341,6 +7383,11 @@ snapshots:
       postcss: 8.5.1
       postcss-scss: 4.0.9(postcss@8.5.1)
     optionalDependencies:
+      svelte: 5.28.2
+
+  svelte-sonner@1.0.1(svelte@5.28.2):
+    dependencies:
+      runed: 0.26.0(svelte@5.28.2)
       svelte: 5.28.2
 
   svelte-toolbelt@0.7.1(svelte@5.28.2):
