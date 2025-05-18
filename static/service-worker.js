@@ -40,7 +40,6 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-	console.log('fetch', event.request.url);
 	const shouldCacheResource = RUNTIME_CACHE_PATTERNS.some((pattern) =>
 		pattern.test(event.request.url)
 	);
