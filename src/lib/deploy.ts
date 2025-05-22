@@ -138,7 +138,7 @@ export async function deployContract(constructorArgs?: unknown[]) {
 		if (!compileSuccess) {
 			return;
 		}
-		const { compiledAbi, compiledBytecode } = getEditorState()
+		const { compiledAbi, compiledBytecode } = getEditorState();
 
 		if (!compiledAbi || !compiledBytecode) {
 			updateEditorState({

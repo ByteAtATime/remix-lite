@@ -155,7 +155,7 @@
 					bind:value
 					{placeholder}
 					disabled={isLoading || disabled}
-					class="w-full px-2 outline-none placeholder:text-muted-foreground bg-background focus-visible:outline-none"
+					class="w-full bg-background px-2 outline-none placeholder:text-muted-foreground focus-visible:outline-none"
 					class:pr-12={showSuffix}
 					onfocus={() => {
 						if (inputElement) {
