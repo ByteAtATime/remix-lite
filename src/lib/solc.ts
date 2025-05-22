@@ -90,9 +90,10 @@ const openzeppelinContracts = import.meta.glob('/node_modules/@openzeppelin/cont
 function extractImports(source: string): string[] {
 	const imports: string[] = [];
 
-	const importRegex = /import .+? "(.+)"/g;
+	const importRegex = /import.+?"(.+)"/g;
 
 	let match;
+	console.log(source);
 	while ((match = importRegex.exec(source)) !== null) {
 		imports.push(match[1]);
 	}
@@ -135,7 +136,10 @@ async function resolveImports(
 		let fullPath: string;
 		let actualImportPath = importPath;
 
-		if (
+		if (importPath === './IERC20.sol') {
+			actualImportPath = 'IERC20.sol';
+			fullPath = `/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol`;
+		} else if (
 			path.startsWith('@openzeppelin/') &&
 			(importPath.startsWith('./') || importPath.startsWith('../'))
 		) {
