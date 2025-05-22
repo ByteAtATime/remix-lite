@@ -38,6 +38,11 @@
 	client.watchBlockNumber({
 		onBlockNumber: fetchData
 	});
+
+	$effect(() => {
+		address;
+		fetchData();
+	});
 </script>
 
 <div>
