@@ -10,7 +10,7 @@
 	import * as Resizable from '$lib/components/ui/resizable/index.js';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Alert from '$lib/components/ui/alert';
-	import { CircleX, Copy, Check } from 'lucide-svelte';
+	import { CircleX, Copy, Check, Share2 } from 'lucide-svelte';
 	import { getEditorState, updateEditorState } from '$lib/stores/editor.svelte';
 	import { deployContract, compileCode } from '$lib/deploy';
 	import { page } from '$app/stores';
@@ -23,10 +23,11 @@
 	let abi = $derived(getContractAbi());
 	let address = $derived(getContractAddress());
 
-	const { deploymentStatus, compilationError, isDeploying, compiledAbi } =
+	const { deploymentStatus, compilationError, isDeploying, compiledAbi, code } =
 		$derived(getEditorState());
 
 	let isCopying = $state(false);
+	let isSharing = $state(false);
 
 	let variables = $derived(
 		abi.filter(
@@ -111,18 +112,33 @@
 				setTimeout(() => {
 					isCopying = false;
 				}, 2000);
-				toast.success({
-					title: 'ABI Copied',
+				toast.success('ABI Copied', {
 					description: 'Contract ABI has been copied to clipboard'
 				});
 			} catch (error) {
 				console.error('Failed to copy ABI:', error);
-				toast.success({
-					variant: 'destructive',
-					title: 'Failed to copy',
+				toast.error('Failed to copy', {
 					description: 'Could not copy ABI to clipboard'
 				});
 			}
+		}
+	};
+
+	const shareCode = async () => {
+		try {
+			const encodedCode = btoa(encodeURIComponent(code));
+			const url = `${window.location.origin}${window.location.pathname}#code=${encodedCode}`;
+			await navigator.clipboard.writeText(url);
+			isSharing = true;
+			setTimeout(() => {
+				isSharing = false;
+			}, 2000);
+			toast.success('Link Copied', { description: 'Shareable link has been copied to clipboard' });
+		} catch (error) {
+			console.error('Failed to create share link:', error);
+			toast.error('Failed to create link', {
+				description: 'Could not generate shareable link'
+			});
 		}
 	};
 
@@ -204,23 +220,34 @@
 				<Button onclick={deploy} size="lg" class="w-1/3" disabled={isDeploying}>Deploy</Button>
 			</div>
 			<Card class="p-4">
-				<div class="flex items-center justify-between">
+				<div class="flex flex-wrap items-center justify-between gap-2">
 					<div>
 						{#if deploymentStatus}
 							<p class="text-sm text-muted-foreground">{deploymentStatus}</p>
 						{/if}
 					</div>
-					{#if compiledAbi && !compilationError}
-						<Button variant="outline" size="sm" class="ml-auto flex gap-1" onclick={copyAbi}>
-							{#if isCopying}
+					<div class="flex gap-2">
+						<Button variant="outline" size="sm" class="flex gap-1" onclick={shareCode}>
+							{#if isSharing}
 								<Check class="size-4" />
 								Copied
 							{:else}
-								<Copy class="size-4" />
-								Copy ABI
+								<Share2 class="size-4" />
+								Share
 							{/if}
 						</Button>
-					{/if}
+						{#if compiledAbi && !compilationError}
+							<Button variant="outline" size="sm" class="flex gap-1" onclick={copyAbi}>
+								{#if isCopying}
+									<Check class="size-4" />
+									Copied
+								{:else}
+									<Copy class="size-4" />
+									Copy ABI
+								{/if}
+							</Button>
+						{/if}
+					</div>
 				</div>
 
 				{#if compilationError}
