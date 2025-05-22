@@ -26,7 +26,8 @@ export function initCompilerWorker() {
 		}
 
 		compilerWorker = new Worker(new URL('$lib/solc?worker', import.meta.url), {
-			credentials: 'same-origin'
+			credentials: 'same-origin',
+			type: 'module'
 		});
 		return compilerWorker;
 	}
