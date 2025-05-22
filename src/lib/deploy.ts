@@ -134,15 +134,11 @@ export async function deployContract(constructorArgs?: unknown[]) {
 	try {
 		updateEditorState({ isDeploying: true });
 
-		let { compiledAbi, compiledBytecode } = getEditorState();
-
-		if (!compiledAbi || !compiledBytecode) {
-			const compileSuccess = await compileCode();
-			if (!compileSuccess) {
-				return;
-			}
-			({ compiledAbi, compiledBytecode } = getEditorState());
+		const compileSuccess = await compileCode();
+		if (!compileSuccess) {
+			return;
 		}
+		const { compiledAbi, compiledBytecode } = getEditorState()
 
 		if (!compiledAbi || !compiledBytecode) {
 			updateEditorState({
