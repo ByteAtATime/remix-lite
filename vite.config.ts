@@ -13,5 +13,8 @@ export default defineConfig({
 				global: true
 			}
 		})
-	]
+	],
+	worker: {
+		format: 'es'
+	}
 });
