@@ -1,6 +1,6 @@
 import type { SolcOutput } from '@tevm/solc';
 
-type MessageResult =
+export type MessageResult =
 	| {
 			success: true;
 			result: {
