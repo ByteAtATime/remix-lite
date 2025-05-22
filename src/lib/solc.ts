@@ -84,7 +84,8 @@ ensureCompilerLoaded().catch((error) => {
 });
 
 const openzeppelinContracts = import.meta.glob('/node_modules/@openzeppelin/contracts/**/*.sol', {
-	as: 'raw'
+	query: "?raw",
+	import: "default"
 });
 
 function extractImports(source: string): string[] {
