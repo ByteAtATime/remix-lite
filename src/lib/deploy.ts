@@ -11,7 +11,7 @@ import {
 let compilerWorker: Worker | undefined;
 const COMPILER_URL = 'https://binaries.soliditylang.org/bin/soljson-v0.8.29+commit.ab55807c.js';
 
-export function initCompilerWorker() {
+export async function initCompilerWorker() {
 	if (typeof window !== 'undefined' && !compilerWorker) {
 		if ('caches' in window) {
 			caches.open('remix-lite-resources-v1').then((cache) => {
@@ -25,17 +25,16 @@ export function initCompilerWorker() {
 			});
 		}
 
-		compilerWorker = new Worker(new URL('$lib/solc?worker', import.meta.url), {
-			credentials: 'same-origin',
-			type: 'module'
-		});
+		const SolcWorker = await import('$lib/solc?worker');
+
+		compilerWorker = new SolcWorker.default();
 		return compilerWorker;
 	}
 	return compilerWorker;
 }
 
 export async function compileCode() {
-	const worker = initCompilerWorker();
+	const worker = await initCompilerWorker();
 	if (!worker) {
 		updateEditorState({ deploymentStatus: 'Error: Compiler worker not initialized' });
 		return false;

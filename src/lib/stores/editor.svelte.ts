@@ -167,7 +167,7 @@ export function extractContractInfo(sourceCode: string): {
 	contractName: string | null;
 	solidityVersion: string | null;
 } {
-	const contractNameMatch = sourceCode.match(/contract\s+(\w+)\s*\{/);
+	const contractNameMatch = sourceCode.match(/contract\s+(\w+).*\{/);
 	const pragmaMatch = sourceCode.match(/pragma\s+solidity\s+([^;]+);/);
 
 	const solidityVersion = pragmaMatch
