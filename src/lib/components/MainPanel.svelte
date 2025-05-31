@@ -1,5 +1,5 @@
 <script lang="ts">
-	import TokenBalance from './TokenBalance.svelte';
+	import TokenBalance from './TokenManager.svelte';
 	import InteractPanel from './InteractPanel.svelte';
 
 	let { activeTab }: { activeTab: 'interact' | 'token' } = $props();
