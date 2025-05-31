@@ -13,11 +13,12 @@
 	type Props = {
 		value: string;
 		name?: string;
+		class?: string;
 		placeholder?: string;
 		disabled?: boolean;
 	};
 
-	let { value = $bindable(), name, placeholder, disabled }: Props = $props();
+	let { value = $bindable(), name, placeholder, disabled, class: className }: Props = $props();
 	let inputElement = $state<HTMLInputElement | null>(null);
 
 	// State management
@@ -137,7 +138,7 @@
 {/snippet}
 
 <ContextMenu.Root>
-	<ContextMenu.Trigger>
+	<ContextMenu.Trigger class={className}>
 		<div class="relative w-full">
 			<div
 				class="flex h-10 w-full rounded-md border border-input bg-background text-base ring-offset-background md:text-sm [&:has(:focus-visible)]:outline-none [&:has(:focus-visible)]:ring-2 [&:has(:focus-visible)]:ring-ring [&:has(:focus-visible)]:ring-offset-2 [&:has([disabled])]:cursor-not-allowed [&:has([disabled])]:opacity-50"
