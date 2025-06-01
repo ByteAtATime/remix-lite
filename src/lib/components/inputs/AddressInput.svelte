@@ -140,9 +140,7 @@
 <ContextMenu.Root>
 	<ContextMenu.Trigger class={className}>
 		<div class="relative w-full">
-			<div
-				class="flex h-10 w-full rounded-md border border-input bg-background text-base ring-offset-background md:text-sm [&:has(:focus-visible)]:outline-none [&:has(:focus-visible)]:ring-2 [&:has(:focus-visible)]:ring-ring [&:has(:focus-visible)]:ring-offset-2 [&:has([disabled])]:cursor-not-allowed [&:has([disabled])]:opacity-50"
-			>
+			<div class="flex h-10 w-full rounded-md border border-input">
 				{#if showPrefix}
 					<div class="flex items-center">
 						{@render inputPrefix()}
@@ -156,7 +154,7 @@
 					bind:value
 					{placeholder}
 					disabled={isLoading || disabled}
-					class="w-full bg-background px-2 outline-none placeholder:text-muted-foreground focus-visible:outline-none"
+					class="w-full bg-transparent px-2 outline-none placeholder:text-muted-foreground focus-visible:outline-none"
 					class:pr-12={showSuffix}
 					onfocus={() => {
 						if (inputElement) {

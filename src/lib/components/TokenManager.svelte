@@ -214,97 +214,92 @@
 </script>
 
 <div class="w-full space-y-6">
-	<Card class="w-full">
-		<CardHeader>
-			<CardTitle class="flex items-center gap-2">
-				<Coins class="h-5 w-5" />
-				Token Balance Manager
-			</CardTitle>
-			<CardDescription>Set any ERC20 token balance for any address</CardDescription>
-		</CardHeader>
-		<CardContent class="space-y-4">
-			<div class="space-y-2">
-				<Label for="token-address">Token Contract Address</Label>
-				<div class="flex gap-2">
-					<AddressInput
-						bind:value={tokenAddress}
-						placeholder="0x... or token.eth"
-						name="token-address"
-						class="w-full"
-					/>
-					{#if isValidating}
-						<div class="flex items-center px-3">
-							<Loader2 class="h-4 w-4 animate-spin" />
-						</div>
-					{:else if tokenInfo?.isValid}
-						<div class="flex items-center px-3">
-							<CheckCircle class="h-4 w-4 text-green-500" />
-						</div>
-					{:else if tokenAddress.length > 0}
-						<div class="flex items-center px-3">
-							<AlertCircle class="h-4 w-4 text-red-500" />
-						</div>
-					{/if}
-				</div>
+	<h3 class="-mb-4 text-2xl font-bold">Token Manager</h3>
+
+	<div class="flex gap-2">
+		<AddressInput
+			bind:value={tokenAddress}
+			placeholder="Token Address (0x...)"
+			name="token-address"
+			class="w-full"
+		/>
+		{#if isValidating}
+			<div class="flex items-center px-3">
+				<Loader2 class="h-4 w-4 animate-spin" />
 			</div>
-
-			{#if tokenInfo?.isValid}
-				<div class="rounded-lg bg-muted p-3">
-					<div class="mb-2 flex items-center gap-2">
-						<Badge variant="secondary">{tokenInfo.symbol}</Badge>
-						<span class="text-sm font-medium">{tokenInfo.name}</span>
-					</div>
-					<p class="text-xs text-muted-foreground">
-						Decimals: {tokenInfo.decimals}
-					</p>
-				</div>
-
-				<div class="space-y-2">
-					<Label for="target-address">Target Address</Label>
-					<AddressInput
-						bind:value={targetAddress}
-						placeholder="0x... or user.eth"
-						name="target-address"
-					/>
-				</div>
-
-				<div class="space-y-2">
-					<Label for="token-amount">Token Amount</Label>
-					<Input
-						id="token-amount"
-						type="number"
-						step="0.000001"
-						placeholder="1000"
-						bind:value={tokenAmount}
-					/>
-				</div>
-
-				<Button
-					onclick={handleSetBalance}
-					disabled={!targetAddress || !tokenAmount || isSettingBalance}
-					class="w-full"
-				>
-					{#if isSettingBalance}
-						<Loader2 class="mr-2 h-4 w-4 animate-spin" />
-						Setting Balance...
-					{:else}
-						Set Balance
-					{/if}
-				</Button>
-			{/if}
-		</CardContent>
-	</Card>
+		{:else if tokenInfo?.isValid}
+			<div class="flex items-center px-3">
+				<CheckCircle class="h-4 w-4 text-green-500" />
+			</div>
+		{:else if tokenAddress.length > 0}
+			<div class="flex items-center px-3">
+				<AlertCircle class="h-4 w-4 text-red-500" />
+			</div>
+		{/if}
+	</div>
 
 	{#if tokenInfo?.isValid}
+		<Card class="w-full">
+			<CardHeader>
+				<CardTitle class="flex items-center gap-2">
+					<Coins class="h-5 w-5" />
+					Token Balance
+				</CardTitle>
+			</CardHeader>
+			<CardContent class="space-y-4">
+				{#if tokenInfo?.isValid}
+					<div class="rounded-lg bg-muted p-3">
+						<div class="mb-2 flex items-center gap-2">
+							<Badge variant="secondary">{tokenInfo.symbol}</Badge>
+							<span class="text-sm font-medium">{tokenInfo.name}</span>
+						</div>
+						<p class="text-xs text-muted-foreground">
+							Decimals: {tokenInfo.decimals}
+						</p>
+					</div>
+
+					<div class="space-y-2">
+						<Label for="target-address">Target Address</Label>
+						<AddressInput
+							bind:value={targetAddress}
+							placeholder="0x... or user.eth"
+							name="target-address"
+						/>
+					</div>
+
+					<div class="space-y-2">
+						<Label for="token-amount">Token Amount</Label>
+						<Input
+							id="token-amount"
+							type="number"
+							step="0.000001"
+							placeholder="1000"
+							bind:value={tokenAmount}
+						/>
+					</div>
+
+					<Button
+						onclick={handleSetBalance}
+						disabled={!targetAddress || !tokenAmount || isSettingBalance}
+						class="w-full"
+					>
+						{#if isSettingBalance}
+							<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+							Setting Balance...
+						{:else}
+							Set Balance
+						{/if}
+					</Button>
+				{/if}
+			</CardContent>
+		</Card>
+
 		<Card class="w-full">
 			<CardHeader>
 				<CardTitle class="flex items-center gap-2">
 					<Shield class="h-5 w-5" />
 					Token Approval
 				</CardTitle>
-				<CardDescription>
-					Approve a spender to use tokens on behalf of the target address
-				</CardDescription>
 			</CardHeader>
 			<CardContent class="space-y-4">
 				<div class="space-y-2">
