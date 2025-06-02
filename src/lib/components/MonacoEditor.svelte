@@ -36,12 +36,16 @@
 		try {
 			monaco = (await import('$lib/monaco')).default;
 
-			editor = monaco.editor.create(editorContainer, {
-				automaticLayout: true
-			});
 			monaco.languages.register({ id: 'solidity' });
 			monaco.languages.setMonarchTokensProvider('solidity', solidityTokensProvider as any);
 			monaco.languages.setLanguageConfiguration('solidity', solidityLanguageConfig as any);
+
+			const { RemixCompletionProvider } = await import('$lib/completion');
+			monaco.languages.registerCompletionItemProvider('solidity', new RemixCompletionProvider());
+
+			editor = monaco.editor.create(editorContainer, {
+				automaticLayout: true
+			});
 
 			const model = monaco.editor.createModel(code, 'solidity');
 			editor.setModel(model);
