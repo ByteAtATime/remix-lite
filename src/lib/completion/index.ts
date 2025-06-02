@@ -11,46 +11,7 @@ import type {
 	MemberAccess,
 	SourceUnit
 } from '@solidity-parser/parser/dist/src/ast-types';
-
-export function getMsgCompletionItems(range: IRange): languages.CompletionItem[] {
-	return [
-		{
-			detail: '(bytes): complete calldata',
-			kind: languages.CompletionItemKind.Property,
-			insertText: 'data',
-			label: 'data',
-			range
-		},
-		{
-			detail: '(uint): remaining gas DEPRECATED in 0.4.21 use gasleft()',
-			kind: languages.CompletionItemKind.Property,
-			insertText: 'gas',
-			label: 'gas',
-			range
-		},
-		{
-			detail: '(address): sender of the message (current call)',
-			kind: languages.CompletionItemKind.Property,
-			insertText: 'sender',
-			label: 'sender',
-			range
-		},
-		{
-			detail: '(bytes4): first four bytes of the calldata (i.e. export function identifier)',
-			kind: languages.CompletionItemKind.Property,
-			insertText: 'sig',
-			label: 'sig',
-			range
-		},
-		{
-			detail: '(uint): number of wei sent with the message',
-			kind: languages.CompletionItemKind.Property,
-			insertText: 'value',
-			label: 'value',
-			range
-		}
-	];
-}
+import { getContextualAutoCompleteByGlobalVariable } from './globals';
 
 export class RemixCompletionProvider implements languages.CompletionItemProvider {
 	public readonly triggerCharacters =
@@ -76,8 +37,8 @@ export class RemixCompletionProvider implements languages.CompletionItemProvider
 		const lastNode = await this.getLastNodeInExpression(lineTextBeforeCursor);
 
 		if (lastNode && 'name' in lastNode) {
-			if (lastNode.name === 'msg') {
-				const suggestions = getMsgCompletionItems(range);
+			const suggestions = getContextualAutoCompleteByGlobalVariable(lastNode.name, range);
+			if (suggestions) {
 				return {
 					suggestions: suggestions
 				};
