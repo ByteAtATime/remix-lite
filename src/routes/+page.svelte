@@ -86,10 +86,3 @@
 		</div>
 	</Resizable.Pane>
 </Resizable.PaneGroup>
-
-<div
-	class="pwa-status fixed bottom-2 right-2 rounded bg-gray-800 p-1 text-xs text-gray-300 opacity-70 transition-opacity hover:opacity-100"
->
-	<div>PWA: {pwaStatus}</div>
-	<div>Cache: {cacheStatus ? 'Assets cached' : 'Not cached'}</div>
-</div>
