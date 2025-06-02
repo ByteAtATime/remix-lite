@@ -53,6 +53,7 @@
 <div class="w-full space-y-2">
 	<Select.Root
 		type="single"
+		name="account-selector"
 		value={selectedAccount}
 		onValueChange={(value) => updateEditorState({ selectedAccount: value as Address })}
 	>
