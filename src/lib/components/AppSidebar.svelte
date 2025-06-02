@@ -19,6 +19,7 @@
 	];
 
 	const sidebar = Sidebar.useSidebar();
+	sidebar.props.setOpen(false);
 	$effect(() => {
 		sidebar.state = 'collapsed';
 	});
