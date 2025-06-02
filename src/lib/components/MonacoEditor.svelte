@@ -63,9 +63,13 @@
 		initCompilerWorker();
 
 		try {
-			const accounts = prefundedAccounts[0];
-			if (accounts && accounts.length > 0) {
-				updateEditorState({ deployerAccount: accounts[0] as Address });
+			if (prefundedAccounts && prefundedAccounts.length > 0) {
+				const accountAddresses = prefundedAccounts as Address[];
+				updateEditorState({
+					deployerAccount: accountAddresses[0],
+					availableAccounts: accountAddresses,
+					selectedAccount: accountAddresses[0]
+				});
 			} else {
 				console.error('No accounts found in TEVM client.');
 				updateEditorState({ deploymentStatus: 'Error: No deployer accounts available in TEVM.' });

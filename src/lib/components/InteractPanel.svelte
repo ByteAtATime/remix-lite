@@ -133,7 +133,7 @@
 	};
 </script>
 
-<div class="flex h-full flex-col gap-4 overflow-y-auto p-4">
+<div class="flex h-full flex-col gap-4 overflow-y-auto">
 	<div class="flex w-full justify-center">
 		<Button onclick={deploy} size="lg" class="w-1/3" disabled={isDeploying}>Deploy</Button>
 	</div>
@@ -213,17 +213,6 @@
 			</div>
 		{/if}
 	{/if}
-
-	<div class="flex-grow"></div>
-	<footer class="mt-auto border-t border-gray-200 pt-4 text-center text-sm text-gray-500">
-		<p>
-			<a href="https://github.com/ByteAtATime/remix-lite" class="underline hover:opacity-80"
-				>Fork me</a
-			>
-			· Made with ❤️ at 🏰
-			<a href="https://buidlguidl.com" class="underline hover:opacity-80">BuidlGuidl</a>
-		</p>
-	</footer>
 </div>
 
 <Dialog.Root bind:open={showConstructorDialog}>

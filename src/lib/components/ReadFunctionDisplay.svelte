@@ -8,6 +8,7 @@
 	import { XCircle, CheckCircle2, AlertCircle } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import FunctionParameters from './FunctionParameters.svelte';
+	import { getEditorState } from '$lib/stores/editor.svelte';
 
 	type Props = {
 		func: AbiFunction;
@@ -22,6 +23,8 @@
 	let error = $state<string | null>(null);
 	let isLoading = $state(false);
 	let hasInteracted = $state(false);
+
+	const selectedAccount = $derived(getEditorState().selectedAccount);
 
 	$effect(() => {
 		if (func) {
@@ -43,7 +46,8 @@
 				abi: [func],
 				to: address,
 				functionName: func.name,
-				args: func.inputs.map((input, i) => args[input.name || `param_${i}`])
+				args: func.inputs.map((input, i) => args[input.name || `param_${i}`]),
+				from: selectedAccount
 			});
 
 			result = Array.isArray(data) ? data : [data];

@@ -4,6 +4,7 @@
 	import type { Address } from 'viem';
 	import { RefreshCw } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
+	import { getEditorState } from '$lib/stores/editor.svelte';
 
 	type Props = {
 		variable: AbiFunction;
@@ -16,12 +17,15 @@
 	let data = $state<unknown | null>(null);
 	let isLoading = $state(false);
 
+	const selectedAccount = $derived(getEditorState().selectedAccount);
+
 	const fetchData = async () => {
 		isLoading = true;
 		try {
 			const result = await client.tevmContract({
 				abi: [variable],
 				to: address,
+				from: selectedAccount,
 				functionName: variable.name
 			});
 			data = result.data;

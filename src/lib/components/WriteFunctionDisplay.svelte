@@ -10,6 +10,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import FunctionParameters from './FunctionParameters.svelte';
 	import TransactionReceipt from './TransactionReceipt.svelte';
+	import { getEditorState } from '$lib/stores/editor.svelte';
 
 	type Props = {
 		func: AbiFunction;
@@ -18,6 +19,8 @@
 	};
 
 	let { func, address, client }: Props = $props();
+
+	const selectedAccount = $derived(getEditorState().selectedAccount);
 
 	let args = $state<Record<string, unknown> & { value?: bigint }>({});
 	let result = $state<string[]>([]);
@@ -39,6 +42,7 @@
 			const txReciept_ = await client.tevmContract({
 				abi: [func],
 				to: address,
+				from: selectedAccount,
 				functionName: func.name,
 				args: func.inputs.map((input, i) => args[input.name || `param_${i}`]),
 				value: func.stateMutability === 'payable' ? (args['value'] ?? 0n) : 0n,

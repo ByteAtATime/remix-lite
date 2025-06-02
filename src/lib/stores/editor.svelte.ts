@@ -7,6 +7,8 @@ export type EditorState = {
 	deploymentStatus: string;
 	isDeploying: boolean;
 	deployerAccount?: Address;
+	selectedAccount?: Address;
+	availableAccounts: Address[];
 	compilationError: string | null;
 	compiled: boolean;
 	compiledAbi?: Abi;
@@ -94,6 +96,7 @@ contract YourContract {
 const defaultState: Omit<EditorState, 'code'> = {
 	deploymentStatus: '',
 	isDeploying: false,
+	availableAccounts: [],
 	compilationError: null,
 	compiled: false,
 	compiledDevDoc: undefined,
