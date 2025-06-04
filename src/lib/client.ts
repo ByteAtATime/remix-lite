@@ -6,7 +6,7 @@ import type { Address, Hex } from 'viem';
 export const client = createMemoryClient({
 	common: mainnet,
 	fork: {
-		transport: http('https://eth.drpc.org')({})
+		transport: http('https://eth.llamarpc.com')({})
 	}
 });
 
