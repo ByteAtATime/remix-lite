@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { Toaster } from '$lib/components/ui/sonner';
 	import * as Sidebar from '$lib/components/ui/sidebar';
-	import { ModeWatcher } from 'mode-watcher';
+	import { ModeWatcher, setMode } from 'mode-watcher';
 	import '../app.css';
+	import { getAppSettings } from '$lib/stores/settings.svelte';
 
 	let { children } = $props();
+
+	setMode(getAppSettings().darkMode ? 'dark' : 'light');
 </script>
 
 <ModeWatcher />
