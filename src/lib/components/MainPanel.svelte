@@ -4,15 +4,16 @@
 	import InteractPanel from './InteractPanel.svelte';
 	import AdvancedModeToggle from './AdvancedModeToggle.svelte';
 	import { Separator } from './ui/separator';
-	import { getAppSettings } from '$lib/stores/settings.svelte';
+	import type { AppSettings } from '$lib/stores/settings.svelte';
 
-	let { activeTab }: { activeTab: 'interact' | 'token' } = $props();
-
-	const settings = $derived(getAppSettings());
+	let {
+		activeTab,
+		effectiveSettings
+	}: { activeTab: 'interact' | 'token'; effectiveSettings: AppSettings } = $props();
 </script>
 
 <div class="flex h-full w-full flex-col overflow-y-auto">
-	{#if settings.advancedMode}
+	{#if effectiveSettings.advancedMode}
 		<div class="p-4">
 			<AccountSelector />
 		</div>
@@ -21,7 +22,7 @@
 	{/if}
 
 	<div class="p-4">
-		{#if activeTab === 'token' && settings.advancedMode}
+		{#if activeTab === 'token' && effectiveSettings.advancedMode}
 			<TokenBalance />
 		{:else}
 			<InteractPanel />

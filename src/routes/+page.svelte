@@ -2,15 +2,23 @@
 	import MonacoEditor from '$lib/components/MonacoEditor.svelte';
 	import * as Resizable from '$lib/components/ui/resizable/index.js';
 	import { afterNavigate } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { updateEditorState } from '$lib/stores/editor.svelte';
 	import AppSidebar from '$lib/components/AppSidebar.svelte';
 	import MainPanel from '$lib/components/MainPanel.svelte';
 	import { getAppSettings } from '$lib/stores/settings.svelte';
+	import { IsMobile } from '$lib/hooks/is-mobile.svelte';
+	import * as Tabs from '$lib/components/ui/tabs/index.js';
 
 	let activeTab = $state<'interact' | 'token'>('interact');
 
 	const settings = $derived(getAppSettings());
+	const isMobile = new IsMobile();
+
+	const effectiveSettings = $derived({
+		...settings,
+		advancedMode: isMobile.current ? false : settings.advancedMode
+	});
 
 	let pwaStatus = $state('Loading...');
 	let cacheStatus = $state(false);
@@ -55,8 +63,8 @@
 	}
 
 	const loadCodeFromQueryParam = () => {
-		if ($page.url.hash) {
-			const match = $page.url.hash.match(/code=([^&]+)/);
+		if (page.url.hash) {
+			const match = page.url.hash.match(/code=([^&]+)/);
 			if (match && match[1]) {
 				try {
 					const decodedCode = decodeURIComponent(atob(match[1]));
@@ -77,17 +85,34 @@
 	});
 </script>
 
-<Resizable.PaneGroup direction="horizontal" class="h-full w-full">
-	<Resizable.Pane defaultSize={50} class="h-full">
-		<MonacoEditor />
-	</Resizable.Pane>
-	<Resizable.Handle withHandle />
-	<Resizable.Pane defaultSize={50} class="h-full">
-		<div class="flex h-full">
-			<MainPanel {activeTab} />
-			{#if settings.advancedMode}
-				<AppSidebar bind:activeTab />
-			{/if}
-		</div>
-	</Resizable.Pane>
-</Resizable.PaneGroup>
+{#if isMobile.current}
+	<Tabs.Root class="flex h-full w-full flex-col">
+		<Tabs.List class="grid w-full grid-cols-2 rounded-none">
+			<Tabs.Trigger value="code">Code</Tabs.Trigger>
+			<Tabs.Trigger value="interact">Interact</Tabs.Trigger>
+		</Tabs.List>
+
+		<Tabs.Content value="code" class="mt-0 flex-1 overflow-hidden">
+			<MonacoEditor />
+		</Tabs.Content>
+
+		<Tabs.Content value="interact" class="mt-0 flex-1 overflow-hidden">
+			<MainPanel {activeTab} {effectiveSettings} />
+		</Tabs.Content>
+	</Tabs.Root>
+{:else}
+	<Resizable.PaneGroup direction="horizontal" class="h-full w-full">
+		<Resizable.Pane defaultSize={50} class="h-full">
+			<MonacoEditor />
+		</Resizable.Pane>
+		<Resizable.Handle withHandle />
+		<Resizable.Pane defaultSize={50} class="h-full">
+			<div class="flex h-full">
+				<MainPanel {activeTab} {effectiveSettings} />
+				{#if effectiveSettings.advancedMode}
+					<AppSidebar bind:activeTab />
+				{/if}
+			</div>
+		</Resizable.Pane>
+	</Resizable.PaneGroup>
+{/if}
