@@ -6,8 +6,11 @@
 	import { updateEditorState } from '$lib/stores/editor.svelte';
 	import AppSidebar from '$lib/components/AppSidebar.svelte';
 	import MainPanel from '$lib/components/MainPanel.svelte';
+	import { getAppSettings } from '$lib/stores/settings.svelte';
 
 	let activeTab = $state<'interact' | 'token'>('interact');
+
+	const settings = $derived(getAppSettings());
 
 	let pwaStatus = $state('Loading...');
 	let cacheStatus = $state(false);
@@ -82,7 +85,9 @@
 	<Resizable.Pane defaultSize={50} class="h-full">
 		<div class="flex h-full">
 			<MainPanel {activeTab} />
-			<AppSidebar bind:activeTab />
+			{#if settings.advancedMode}
+				<AppSidebar bind:activeTab />
+			{/if}
 		</div>
 	</Resizable.Pane>
 </Resizable.PaneGroup>

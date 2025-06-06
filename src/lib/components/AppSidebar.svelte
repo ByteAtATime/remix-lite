@@ -2,8 +2,11 @@
 	import * as Sidebar from '$lib/components/ui/sidebar';
 	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { Coins, FlaskConical } from 'lucide-svelte';
+	import { getAppSettings } from '$lib/stores/settings.svelte';
 
 	let { activeTab = $bindable() }: { activeTab: 'interact' | 'token' } = $props();
+
+	const settings = $derived(getAppSettings());
 
 	const menuItems = [
 		{
@@ -18,11 +21,21 @@
 		}
 	];
 
+	const visibleMenuItems = $derived(
+		settings.advancedMode ? menuItems : menuItems.filter((item) => item.id === 'interact')
+	);
+
 	const sidebar = Sidebar.useSidebar();
 	sidebar.props.setOpen(false);
 	$effect(() => {
 		sidebar.state = 'collapsed';
 	});
+
+	// $effect(() => {
+	// 	if (!settings.advancedMode && activeTab === 'token') {
+	// 		activeTab = 'interact';
+	// 	}
+	// });
 </script>
 
 <Sidebar.Root side="right" collapsible="icon" class="border-l">
@@ -30,7 +43,7 @@
 		<Sidebar.Group>
 			<Sidebar.GroupContent>
 				<Sidebar.Menu>
-					{#each menuItems as item (item.id)}
+					{#each visibleMenuItems as item (item.id)}
 						<Sidebar.MenuItem>
 							<Tooltip.Root>
 								<Tooltip.Trigger>

@@ -3,12 +3,7 @@ import { mainnet } from 'tevm/common';
 import { keccak256, encodeAbiParameters, parseAbiParameters, encodeFunctionData } from 'viem';
 import type { Address, Hex } from 'viem';
 
-export const client = createMemoryClient({
-	common: mainnet,
-	fork: {
-		transport: http('https://1.rpc.thirdweb.com')({})
-	}
-});
+export const client = createMemoryClient();
 
 async function findBalancesSlot(tokenAddress: Address): Promise<number> {
 	const account = '0x0000000000000000000000000000000000000000' as Address;
