@@ -86,7 +86,7 @@
 </script>
 
 {#if isMobile.current}
-	<Tabs.Root class="flex h-full w-full flex-col">
+	<Tabs.Root class="flex h-full w-full flex-col" bind:value={activeTab}>
 		<Tabs.List class="grid w-full grid-cols-2 rounded-none">
 			<Tabs.Trigger value="code">Code</Tabs.Trigger>
 			<Tabs.Trigger value="interact">Interact</Tabs.Trigger>
