@@ -3,6 +3,9 @@
 	import EventLog from './events/EventLog.svelte';
 	import { parseEventLogs, type Log } from 'viem';
 	import { getContractAbi } from '$lib/stores/contract.svelte';
+	import * as Card from '$lib/components/ui/card';
+	import { Alert, AlertDescription } from './ui/alert';
+	import { AlertCircle } from 'lucide-svelte';
 
 	type Props = {
 		receipt: ContractResult;
@@ -21,26 +24,43 @@
 
 <div class="mb-4 w-full">
 	<div class="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-		<div class="rounded-lg bg-gray-50 p-4">
-			<h3 class="mb-1 text-sm font-medium text-gray-500">Gas Used</h3>
-			<p class="text-lg font-semibold">{receipt.executionGasUsed.toLocaleString()}</p>
-			<p class="text-xs text-gray-500">Actual gas consumed</p>
-		</div>
-		<div class="rounded-lg bg-gray-50 p-4">
-			<h3 class="mb-1 text-sm font-medium text-gray-500">Total Gas Spent</h3>
-			<p class="text-lg font-semibold">{receipt.totalGasSpent?.toLocaleString()}</p>
-			<p class="text-xs text-gray-500">Including unused gas</p>
-		</div>
-		<div class="rounded-lg bg-gray-50 p-4">
-			<h3 class="mb-1 text-sm font-medium text-gray-500">Gas Limit</h3>
-			<p class="text-lg font-semibold">{receipt.gas?.toLocaleString()}</p>
-			<p class="text-xs text-gray-500">Maximum allowed gas</p>
-		</div>
+		<Card.Root>
+			<Card.Header>
+				<Card.Title class="text-xl">Gas Used</Card.Title>
+			</Card.Header>
+			<Card.Content class="pt-4">
+				<p class="text-lg font-semibold">{receipt.executionGasUsed.toLocaleString()}</p>
+				<Card.Description>Actual gas consumed</Card.Description>
+			</Card.Content>
+		</Card.Root>
+		<Card.Root>
+			<Card.Header>
+				<Card.Title class="text-xl">Total Gas Spent</Card.Title>
+			</Card.Header>
+			<Card.Content class="pt-4">
+				<p class="text-lg font-semibold">{receipt.totalGasSpent?.toLocaleString()}</p>
+				<Card.Description>Including unused gas</Card.Description>
+			</Card.Content>
+		</Card.Root>
+		<Card.Root>
+			<Card.Header>
+				<Card.Title class="text-xl">Gas Limit</Card.Title>
+			</Card.Header>
+			<Card.Content class="pt-4">
+				<p class="text-lg font-semibold">{receipt.gas?.toLocaleString()}</p>
+				<Card.Description>Maximum allowed gas</Card.Description>
+			</Card.Content>
+		</Card.Root>
 	</div>
 
 	<h3 class="mb-2 text-sm font-medium">Events</h3>
 
 	{#each logs as log, i}
 		<EventLog {log} index={i} />
+	{:else}
+		<Alert>
+			<AlertCircle class="h-4 w-4" />
+			<AlertDescription>No events emitted</AlertDescription>
+		</Alert>
 	{/each}
 </div>

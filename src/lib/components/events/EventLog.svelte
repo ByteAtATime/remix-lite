@@ -37,7 +37,7 @@
 				<Accordion.Content>
 					<div class="space-y-4 [&>*]:space-y-2">
 						<div>
-							<div class="text-sm font-medium text-gray-500">Name</div>
+							<div class="text-sm font-medium text-muted-foreground">Name</div>
 							<div class="text-sm">
 								<code class="font-mono">
 									{log.eventName}({#each Object.keys(log.args) as key, i}
@@ -56,9 +56,9 @@
 						</div>
 
 						<div>
-							<div class="text-sm font-medium text-gray-500">Address</div>
+							<div class="text-sm font-medium text-muted-foreground">Address</div>
 							<div class="flex items-center gap-2">
-								<code class="flex-1 rounded-lg bg-gray-50 p-2 font-mono text-sm">
+								<code class="flex-1 rounded-lg bg-muted p-2 font-mono text-sm">
 									{log.address}
 								</code>
 								<CopyButton text={log.address} />
@@ -66,10 +66,10 @@
 						</div>
 
 						<div>
-							<span class="text-sm font-medium text-gray-500">Topics</span>
+							<span class="text-sm font-medium text-muted-foreground">Topics</span>
 							{#each log.topics as topic}
-								<div class="flex items-center justify-between">
-									<code class="flex-1 rounded-lg bg-gray-50 p-2 font-mono text-sm">
+								<div class="flex items-center justify-between gap-2">
+									<code class="flex-1 rounded-lg bg-muted p-2 font-mono text-sm">
 										{topic}
 									</code>
 									<CopyButton text={topic} />
@@ -79,11 +79,11 @@
 
 						{#if log.args}
 							<div>
-								<span class="text-sm font-medium text-gray-500">Parameters</span>
+								<span class="text-sm font-medium text-muted-foreground">Parameters</span>
 								{#each Object.entries(log.args) as [key, value]}
-									<div class="flex items-center justify-between">
+									<div class="flex items-center justify-between gap-2">
 										<span class="text-sm font-medium">{key}</span>
-										<code class="flex-1 rounded-lg bg-gray-50 p-2 font-mono text-sm">
+										<code class="flex-1 rounded-lg bg-muted p-2 font-mono text-sm">
 											{value?.toString()}
 										</code>
 									</div>
@@ -92,9 +92,9 @@
 						{/if}
 
 						<div>
-							<span class="text-sm font-medium text-gray-500">Raw Data</span>
-							<div class="flex items-center justify-between">
-								<code class="flex-1 rounded-lg bg-gray-50 p-2 font-mono text-sm">
+							<span class="text-sm font-medium text-muted-foreground">Raw Data</span>
+							<div class="flex items-center justify-between gap-2">
+								<code class="flex-1 rounded-lg bg-muted p-2 font-mono text-sm">
 									{log.data}
 								</code>
 								<CopyButton text={log.data} />

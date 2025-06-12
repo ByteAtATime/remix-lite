@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { CheckCircle, Copy, type Icon as IconType } from 'lucide-svelte';
 	import type { Snippet } from 'svelte';
+	import { Button } from './ui/button';
 
 	type Props = {
 		text: string;
@@ -19,13 +20,13 @@
 </script>
 
 {#if !child}
-	<button onclick={() => copyToClipboard(text)} class="rounded p-1 hover:bg-gray-100">
+	<Button onclick={() => copyToClipboard(text)} variant="ghost" size="icon" class="h-8 w-8">
 		{#if !isCopied}
 			<Copy class="h-4 w-4" />
 		{:else}
 			<CheckCircle class="h-4 w-4" />
 		{/if}
-	</button>
+	</Button>
 {:else}
 	{@render child({
 		copy: () => copyToClipboard(text),
