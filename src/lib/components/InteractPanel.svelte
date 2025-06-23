@@ -114,15 +114,6 @@
 </script>
 
 <div class="flex h-full flex-col gap-4 overflow-y-auto">
-	<div class="flex w-full">
-		<Button
-			onclick={deploy}
-			size="lg"
-			class="w-full bg-lime-300 text-black hover:bg-lime-400 dark:bg-lime-400 dark:hover:bg-lime-500"
-			disabled={isDeploying}>Deploy contract</Button
-		>
-	</div>
-
 	{#if compilationError}
 		<Alert.Root class="mt-4" variant="destructive">
 			<CircleX class="size-4" />
@@ -135,6 +126,12 @@
 
 	{#if contract && address && abi}
 		<Card class="p-4">
+			<Button
+				onclick={deploy}
+				size="lg"
+				class="float-right bg-lime-300 text-black hover:bg-lime-400 dark:bg-lime-400 dark:hover:bg-lime-500"
+				disabled={isDeploying}>Deploy contract</Button
+			>
 			<h2 class="mb-4 text-xl font-bold">Contract details</h2>
 			<div>
 				<p class="text-sm text-muted-foreground">Deployed successfully at:</p>
