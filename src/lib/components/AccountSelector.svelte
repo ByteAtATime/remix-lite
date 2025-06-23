@@ -50,15 +50,20 @@
 	});
 </script>
 
-<div class="w-full space-y-2">
+<div class="mx-4 mt-4 flex items-center gap-6 rounded-full bg-secondary p-2 pl-6 shadow-lg">
+	Wallet
+
 	<Select.Root
-		type="single"
 		name="account-selector"
 		value={selectedAccount}
-		onValueChange={(value) => updateEditorState({ selectedAccount: value as Address })}
+		type="single"
+		onValueChange={(value) =>
+			updateEditorState({ selectedAccount: value[0] as Address | undefined })}
 	>
-		<Select.Trigger class="w-full">
-			{selectedAccount ? formatAccountDisplay(selectedAccount) : 'Select an account'}
+		<Select.Trigger
+			class="w-full truncate rounded-full border-none bg-accent px-4 text-accent-foreground"
+		>
+			{selectedAccount ?? 'Select an account'}
 		</Select.Trigger>
 		<Select.Content>
 			{#each availableAccounts as account (account)}

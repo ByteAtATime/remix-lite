@@ -49,16 +49,10 @@
 	});
 </script>
 
-<div>
-	<div class="flex items-center gap-2">
-		<h3 class="mb-0 break-all text-lg font-medium">{variable.name}</h3>
-		<Button variant="ghost" size="icon" onclick={fetchData} disabled={isLoading} class="h-6 w-6">
-			<RefreshCw class="size-3 {isLoading ? 'animate-spin' : ''}" />
-		</Button>
-	</div>
-	<div class="text-base-content/80 flex flex-col items-start">
-		<div class="block break-all bg-transparent transition">
-			{data ?? 'loading...'}
-		</div>
-	</div>
+<div class="flex items-center gap-2 rounded-md bg-muted px-2 py-1 text-sm">
+	<span>{variable.name}</span>
+	<span class="font-bold">{data?.toString() ?? '...'}</span>
+	<Button variant="ghost" size="icon" onclick={fetchData} disabled={isLoading} class="h-6 w-6">
+		<RefreshCw class="h-3 w-3 {isLoading ? 'animate-spin' : ''}" />
+	</Button>
 </div>

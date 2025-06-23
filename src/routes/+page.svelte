@@ -9,6 +9,7 @@
 	import { getAppSettings } from '$lib/stores/settings.svelte';
 	import { IsMobile } from '$lib/hooks/is-mobile.svelte';
 	import * as Tabs from '$lib/components/ui/tabs/index.js';
+	import AdvancedModeToggle from '$lib/components/AdvancedModeToggle.svelte';
 
 	let activeTab = $state<'interact' | 'token'>('interact');
 
@@ -108,7 +109,9 @@
 		<Resizable.Handle withHandle />
 		<Resizable.Pane defaultSize={50} class="h-full">
 			<div class="flex h-full">
-				<MainPanel {activeTab} {effectiveSettings} />
+				<div class="flex-1">
+					<MainPanel {activeTab} {effectiveSettings} />
+				</div>
 				{#if effectiveSettings.advancedMode}
 					<AppSidebar bind:activeTab />
 				{/if}
@@ -116,3 +119,7 @@
 		</Resizable.Pane>
 	</Resizable.PaneGroup>
 {/if}
+
+<div class="fixed bottom-4 right-4 z-50">
+	<AdvancedModeToggle />
+</div>
