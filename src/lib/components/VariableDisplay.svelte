@@ -49,10 +49,14 @@
 	});
 </script>
 
-<div class="flex items-center gap-2 rounded-md bg-muted px-2 py-1 text-sm">
-	<span>{variable.name}</span>
-	<span class="font-bold">{data?.toString() ?? '...'}</span>
-	<Button variant="ghost" size="icon" onclick={fetchData} disabled={isLoading} class="h-6 w-6">
-		<RefreshCw class="h-3 w-3 {isLoading ? 'animate-spin' : ''}" />
-	</Button>
+<div class="flex overflow-hidden rounded-md text-sm">
+	<div class="flex items-center gap-2 bg-accent px-2 py-1 text-accent-foreground">
+		<span>{variable.name}</span>
+		<Button variant="ghost" size="icon" onclick={fetchData} disabled={isLoading} class="h-6 w-6">
+			<RefreshCw class="h-3 w-3 {isLoading ? 'animate-spin' : ''}" />
+		</Button>
+	</div>
+	<div class="flex items-center bg-white px-3 text-black">
+		{data?.toString() ?? '...'}
+	</div>
 </div>
