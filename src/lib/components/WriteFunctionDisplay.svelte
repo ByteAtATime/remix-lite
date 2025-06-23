@@ -108,7 +108,11 @@
 	<div class="space-y-4">
 		<div class="flex items-center gap-2">
 			<h3 class="text-lg font-medium">{func.name}</h3>
-			<Badge variant={func.stateMutability === 'payable' ? 'destructive' : 'secondary'}>
+			<Badge
+				class={func.stateMutability === 'payable'
+					? 'border-transparent bg-accent text-accent-foreground hover:bg-accent/80'
+					: 'border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80'}
+			>
 				{func.stateMutability}
 			</Badge>
 		</div>
