@@ -9,6 +9,7 @@
 	import * as Avatar from '$lib/components/ui/avatar';
 	import * as ContextMenu from '$lib/components/ui/context-menu';
 	import { ExternalLink } from 'lucide-svelte';
+	import { Input } from '../ui/input';
 
 	type Props = {
 		value: string;
@@ -147,15 +148,15 @@
 					</div>
 				{/if}
 
-				<input
-					bind:this={inputElement}
+				<Input
+					bind:ref={inputElement}
 					{name}
 					type="text"
 					bind:value
 					{placeholder}
 					disabled={isLoading || disabled}
-					class="w-full bg-transparent px-2 outline-none placeholder:text-muted-foreground focus-visible:outline-none"
-					class:pr-12={showSuffix}
+					class="w-full px-2 outline-none placeholder:text-muted-foreground focus-visible:outline-none {showSuffix &&
+						'pr-12'}"
 					onfocus={() => {
 						if (inputElement) {
 							const length = inputElement.value.length;
