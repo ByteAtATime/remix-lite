@@ -1,37 +1,24 @@
 <script lang="ts">
-	import { getAppSettings, toggleAdvancedMode, toggleDarkMode } from '$lib/stores/settings.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Settings, Zap, Sun, Moon } from 'lucide-svelte';
+	import { getAppSettings, toggleDarkMode } from '$lib/stores/settings.svelte';
+	import { Sun, Moon } from 'lucide-svelte';
 
 	const settings = $derived(getAppSettings());
 </script>
 
-<div class="flex items-center gap-2">
-	<Button
-		variant="ghost"
-		size="sm"
-		onclick={toggleDarkMode}
-		class="flex items-center gap-2 text-sm"
+<button
+	onclick={toggleDarkMode}
+	class="relative flex h-8 w-14 items-center rounded-full bg-muted p-1 transition-colors"
+	aria-label="Toggle Dark Mode"
+>
+	<div
+		class="absolute flex h-6 w-6 transform items-center justify-center rounded-full bg-background shadow-md transition-transform"
+		class:translate-x-6={settings.darkMode}
+		class:translate-x-0={!settings.darkMode}
 	>
 		{#if settings.darkMode}
-			<Sun class="h-4 w-4" />
-		{:else}
 			<Moon class="h-4 w-4" />
-		{/if}
-	</Button>
-
-	<Button
-		variant="ghost"
-		size="sm"
-		onclick={toggleAdvancedMode}
-		class="flex items-center gap-2 text-sm"
-	>
-		{#if settings.advancedMode}
-			<Zap class="h-4 w-4" />
-			Simple Mode
 		{:else}
-			<Settings class="h-4 w-4" />
-			Advanced Mode
+			<Sun class="h-4 w-4" />
 		{/if}
-	</Button>
-</div>
+	</div>
+</button>

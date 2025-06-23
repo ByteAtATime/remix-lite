@@ -116,11 +116,11 @@
 		<div class="space-y-3">
 			<FunctionParameters {func} bind:args />
 
-			<Button onclick={handleWrite} disabled={isLoading} class="w-full" variant="destructive">
+			<Button onclick={handleWrite} disabled={isLoading} class="w-full">
 				{#if isLoading}
 					Executing...
 				{:else}
-					Execute {func.name}
+					Execute
 				{/if}
 			</Button>
 		</div>
