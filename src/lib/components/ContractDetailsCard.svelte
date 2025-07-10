@@ -92,11 +92,6 @@
 			<div class="mt-4">
 				<div class="flex items-center justify-between">
 					<h3 class="text-lg font-bold">Variables</h3>
-					<div class="flex items-center">
-						<Button variant="ghost" size="icon" class="text-muted-foreground">
-							<Lock class="h-4 w-4" />
-						</Button>
-					</div>
 				</div>
 				<div class="mt-2 flex flex-wrap gap-2">
 					{#each variables as variable}
