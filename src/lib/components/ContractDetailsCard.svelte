@@ -62,7 +62,7 @@
 			<Button
 				onclick={ondeploy}
 				size="lg"
-				class="bg-lime-300 text-black hover:bg-lime-400 dark:bg-lime-400 dark:hover:bg-lime-500"
+				class="bg-primary text-black hover:bg-primary/90"
 				disabled={isDeploying}
 			>
 				Deploy contract
