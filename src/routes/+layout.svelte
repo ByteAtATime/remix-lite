@@ -4,6 +4,7 @@
 	import { ModeWatcher, setMode } from 'mode-watcher';
 	import '../app.css';
 	import { getAppSettings } from '$lib/stores/settings.svelte';
+	import '@fontsource-variable/space-grotesk';
 
 	let { children } = $props();
 
