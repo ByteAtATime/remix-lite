@@ -50,7 +50,7 @@
 <label>
 	{name} ({input?.internalType ?? type})
 	{#if paramDescription}
-		<span class="block text-xs italic text-gray-500">{paramDescription}</span>
+		<span class="block text-xs italic text-muted-foreground">{paramDescription}</span>
 	{/if}
 
 	<div class="mt-3">
