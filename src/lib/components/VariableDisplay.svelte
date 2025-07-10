@@ -1,14 +1,15 @@
 <script lang="ts">
 	import type { AbiFunction } from 'abitype';
 	import type { MemoryClient } from 'tevm';
-	import type { Address } from 'viem';
+	import { isAddress, type Address as AddressType } from 'viem';
 	import { RefreshCw } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { getEditorState } from '$lib/stores/editor.svelte';
+	import Address from './Address.svelte';
 
 	type Props = {
 		variable: AbiFunction;
-		address: Address;
+		address: AddressType;
 		client: MemoryClient;
 	};
 
@@ -57,6 +58,10 @@
 		</Button>
 	</div>
 	<div class="flex items-center bg-white px-3 text-black">
-		{data?.toString() ?? '...'}
+		{#if typeof data === 'string' && isAddress(data)}
+			<Address address={data} size="sm" />
+		{:else}
+			{data?.toString() ?? '...'}
+		{/if}
 	</div>
 </div>
