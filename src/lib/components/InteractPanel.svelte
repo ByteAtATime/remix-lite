@@ -124,15 +124,15 @@
 		</Alert.Root>
 	{/if}
 
-	{#if contract && address && abi}
-		<Card class="p-4">
-			<Button
-				onclick={deploy}
-				size="lg"
-				class="float-right bg-lime-300 text-black hover:bg-lime-400 dark:bg-lime-400 dark:hover:bg-lime-500"
-				disabled={isDeploying}>Deploy contract</Button
-			>
-			<h2 class="mb-4 text-xl font-bold">Contract details</h2>
+	<Card class="p-4">
+		<Button
+			onclick={deploy}
+			size="lg"
+			class="float-right bg-lime-300 text-black hover:bg-lime-400 dark:bg-lime-400 dark:hover:bg-lime-500"
+			disabled={isDeploying}>Deploy contract</Button
+		>
+		<h2 class="mb-4 text-xl font-bold">Contract details</h2>
+		{#if contract && address && abi}
 			<div>
 				<p class="text-sm text-muted-foreground">Deployed successfully at:</p>
 				<div
@@ -167,8 +167,10 @@
 					</div>
 				</div>
 			{/if}
-		</Card>
-	{/if}
+		{:else}
+			<p>The contract has not been deployed yet.</p>
+		{/if}
+	</Card>
 
 	{#if contract && address && abi}
 		{#if readFunctions.length > 0}
