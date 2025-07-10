@@ -25,7 +25,7 @@
 {#if methodDoc?.details}
 	<p class="mb-2 text-sm italic text-muted-foreground">{methodDoc.details}</p>
 {/if}
-<div class="mb-8 mt-4 flex flex-col gap-4">
+<div class="mb-6 mt-2 flex flex-col gap-4">
 	{#if func.stateMutability === 'payable'}
 		<InputDispatcher type="uint256" name="value" bind:value={args['value']} />
 	{/if}
