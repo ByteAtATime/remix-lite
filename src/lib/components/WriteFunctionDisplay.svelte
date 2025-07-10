@@ -105,38 +105,36 @@
 {/snippet}
 
 <Card class="p-4">
-	<div class="space-y-4">
-		<div class="flex items-center gap-2">
-			<h3 class="text-lg font-medium">{func.name}</h3>
-			<Badge
-				class={func.stateMutability === 'payable'
-					? 'border-transparent bg-accent text-accent-foreground hover:bg-accent/80'
-					: 'border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80'}
-			>
-				{func.stateMutability}
-			</Badge>
-		</div>
-
-		<div class="space-y-3">
-			<FunctionParameters {func} bind:args />
-
-			<Button onclick={handleWrite} disabled={isLoading} class="w-full">
-				{#if isLoading}
-					Executing...
-				{:else}
-					Execute
-				{/if}
-			</Button>
-		</div>
-
-		{#if isLoading}
-			{@render loadingView()}
-		{:else if error}
-			{@render errorView(error)}
-		{:else if result.length > 0}
-			{@render successView(txReceipt)}
-		{:else if hasInteracted}
-			{@render noTransactionView()}
-		{/if}
+	<div class="flex items-center gap-2">
+		<h3 class="text-lg font-medium">{func.name}</h3>
+		<Badge
+			class={func.stateMutability === 'payable'
+				? 'border-transparent bg-accent text-accent-foreground hover:bg-accent/80'
+				: 'border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80'}
+		>
+			{func.stateMutability}
+		</Badge>
 	</div>
+
+	<div class="flex flex-col">
+		<FunctionParameters {func} bind:args />
+
+		<Button onclick={handleWrite} disabled={isLoading} class="w-full">
+			{#if isLoading}
+				Executing...
+			{:else}
+				Execute
+			{/if}
+		</Button>
+	</div>
+
+	{#if isLoading}
+		{@render loadingView()}
+	{:else if error}
+		{@render errorView(error)}
+	{:else if result.length > 0}
+		{@render successView(txReceipt)}
+	{:else if hasInteracted}
+		{@render noTransactionView()}
+	{/if}
 </Card>
