@@ -20,10 +20,10 @@
 </script>
 
 {#if methodUserDoc?.notice}
-	<p class="mb-2 text-sm text-blue-700">{methodUserDoc.notice}</p>
+	<p class="mb-2 text-sm text-muted-foreground">{methodUserDoc.notice}</p>
 {/if}
 {#if methodDoc?.details}
-	<p class="mb-2 text-sm italic text-gray-600">{methodDoc.details}</p>
+	<p class="mb-2 text-sm italic text-muted-foreground">{methodDoc.details}</p>
 {/if}
 <div class="mb-8 mt-4 flex flex-col gap-4">
 	{#if func.stateMutability === 'payable'}
