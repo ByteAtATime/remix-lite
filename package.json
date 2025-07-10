@@ -49,6 +49,7 @@
 		"vite-plugin-wasm": "^3.4.1"
 	},
 	"dependencies": {
+		"@fontsource-variable/space-grotesk": "^5.2.8",
 		"@openzeppelin/contracts": "^5.3.0",
 		"@solidity-parser/parser": "^0.20.1",
 		"@tevm/solc": "1.0.0-next.142",
