@@ -79,6 +79,8 @@
 </script>
 
 <div class="contents h-full flex-col space-y-4 overflow-y-auto">
+	<ContractDetailsCard ondeploy={handleDeploy} />
+
 	{#if compilationError}
 		<Alert.Root class="mt-4" variant="destructive">
 			<CircleX class="size-4" />
@@ -88,8 +90,6 @@
 			</Alert.Description>
 		</Alert.Root>
 	{/if}
-
-	<ContractDetailsCard ondeploy={handleDeploy} />
 
 	{#if address && abi}
 		{#if readFunctions.length > 0}
