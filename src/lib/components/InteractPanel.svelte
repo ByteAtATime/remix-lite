@@ -78,7 +78,7 @@
 	};
 </script>
 
-<div class="flex h-full flex-col gap-4 overflow-y-auto">
+<div class="contents h-full flex-col space-y-4 overflow-y-auto">
 	{#if compilationError}
 		<Alert.Root class="mt-4" variant="destructive">
 			<CircleX class="size-4" />
