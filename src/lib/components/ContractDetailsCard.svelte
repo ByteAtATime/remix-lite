@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Card } from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
-	import { Check, Share2, Lock } from 'lucide-svelte';
+	import { Check, Share2, Lock, Pin, PinOff } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
 	import CopyButton from './CopyButton.svelte';
 	import VariableDisplay from './VariableDisplay.svelte';
@@ -12,9 +12,10 @@
 
 	type Props = {
 		ondeploy: () => void;
+		isPinned?: boolean;
 	};
 
-	let { ondeploy }: Props = $props();
+	let { ondeploy, isPinned = $bindable(false) }: Props = $props();
 
 	let contract = $derived(getContract());
 	let abi = $derived(getContractAbi());
@@ -52,16 +53,23 @@
 	};
 </script>
 
-<Card class="p-4">
-	<Button
-		onclick={ondeploy}
-		size="lg"
-		class="float-right bg-lime-300 text-black hover:bg-lime-400 dark:bg-lime-400 dark:hover:bg-lime-500"
-		disabled={isDeploying}
-	>
-		Deploy contract
-	</Button>
-	<h2 class="mb-4 text-xl font-bold">Contract details</h2>
+<Card
+	class="relative p-4 {isPinned ? 'sticky top-0 z-10 bg-card/95 shadow-xl backdrop-blur-md' : ''}"
+>
+	<div class="mb-4 flex items-center justify-between">
+		<h2 class="text-xl font-bold">Contract details</h2>
+		<div class="flex items-center gap-2">
+			<Button
+				onclick={ondeploy}
+				size="lg"
+				class="bg-lime-300 text-black hover:bg-lime-400 dark:bg-lime-400 dark:hover:bg-lime-500"
+				disabled={isDeploying}
+			>
+				Deploy contract
+			</Button>
+		</div>
+	</div>
+
 	{#if contract && address && abi}
 		<div>
 			<p class="text-sm text-muted-foreground">Deployed successfully at:</p>
@@ -100,4 +108,17 @@
 	{:else}
 		<p>The contract has not been deployed yet.</p>
 	{/if}
+
+	<Button
+		variant="ghost"
+		size="icon"
+		onclick={() => (isPinned = !isPinned)}
+		class="absolute bottom-2 right-2"
+	>
+		{#if isPinned}
+			<Pin class="size-4" />
+		{:else}
+			<PinOff class="size-4" />
+		{/if}
+	</Button>
 </Card>
