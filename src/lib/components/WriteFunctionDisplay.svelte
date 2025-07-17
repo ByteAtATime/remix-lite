@@ -71,21 +71,21 @@
 </script>
 
 {#snippet loadingView()}
-	<div class="space-y-2">
+	<div class="mt-4 space-y-2">
 		<Skeleton class="h-8 w-full" />
 		<Skeleton class="h-8 w-3/4" />
 	</div>
 {/snippet}
 
 {#snippet errorView(error: string)}
-	<Alert variant="destructive">
+	<Alert variant="destructive" class="mt-4">
 		<XCircle class="h-4 w-4" />
 		<AlertDescription>{error}</AlertDescription>
 	</Alert>
 {/snippet}
 
 {#snippet successView(txReceipt: ContractResult | null)}
-	<div class="space-y-2 rounded-lg border p-4">
+	<div class="mt-4 space-y-2 rounded-lg border p-4">
 		<div class="mb-2 flex items-center gap-2">
 			<CheckCircle2 class="h-4 w-4 text-green-500" />
 			<span class="text-sm font-medium">Transaction Successful</span>
@@ -98,7 +98,7 @@
 {/snippet}
 
 {#snippet noTransactionView()}
-	<Alert>
+	<Alert class="mt-4">
 		<AlertCircle class="h-4 w-4" />
 		<AlertDescription>No transaction executed yet</AlertDescription>
 	</Alert>

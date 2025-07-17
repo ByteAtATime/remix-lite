@@ -85,17 +85,17 @@
 	</div>
 
 	{#if isLoading}
-		<div class="space-y-2">
+		<div class="mt-4 space-y-2">
 			<Skeleton class="h-8 w-full" />
 			<Skeleton class="h-8 w-3/4" />
 		</div>
 	{:else if error}
-		<Alert variant="destructive">
+		<Alert variant="destructive" class="mt-4">
 			<XCircle class="h-4 w-4" />
 			<AlertDescription>{error}</AlertDescription>
 		</Alert>
 	{:else if result.length > 0}
-		<div class="space-y-2 rounded-lg border p-4">
+		<div class="mt-4 space-y-2 rounded-lg border p-4">
 			<div class="mb-2 flex items-center gap-2">
 				<CheckCircle2 class="h-4 w-4 text-green-500" />
 				<span class="text-sm font-medium">Result</span>
@@ -112,7 +112,7 @@
 			{/each}
 		</div>
 	{:else if hasInteracted}
-		<Alert>
+		<Alert class="mt-4">
 			<AlertCircle class="h-4 w-4" />
 			<AlertDescription>No results to display</AlertDescription>
 		</Alert>
