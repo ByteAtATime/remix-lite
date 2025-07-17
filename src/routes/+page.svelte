@@ -119,7 +119,3 @@
 		</Resizable.Pane>
 	</Resizable.PaneGroup>
 {/if}
-
-<div class="fixed bottom-4 right-4 z-50">
-	<AdvancedModeToggle />
-</div>
