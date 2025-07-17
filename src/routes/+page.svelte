@@ -9,7 +9,6 @@
 	import { getAppSettings } from '$lib/stores/settings.svelte';
 	import { IsMobile } from '$lib/hooks/is-mobile.svelte';
 	import * as Tabs from '$lib/components/ui/tabs/index.js';
-	import AdvancedModeToggle from '$lib/components/AdvancedModeToggle.svelte';
 
 	let activeTab = $state<'interact' | 'token'>('interact');
 

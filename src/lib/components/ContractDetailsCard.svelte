@@ -101,21 +101,21 @@
 					</div>
 				</div>
 			{/if}
+
+			<Button
+				variant="ghost"
+				size="icon"
+				onclick={() => (isPinned = !isPinned)}
+				class="absolute bottom-2 right-2"
+			>
+				{#if isPinned}
+					<Pin class="size-4" />
+				{:else}
+					<PinOff class="size-4" />
+				{/if}
+			</Button>
 		{:else}
 			<p>The contract has not been deployed yet.</p>
 		{/if}
-
-		<Button
-			variant="ghost"
-			size="icon"
-			onclick={() => (isPinned = !isPinned)}
-			class="absolute bottom-2 right-2"
-		>
-			{#if isPinned}
-				<Pin class="size-4" />
-			{:else}
-				<PinOff class="size-4" />
-			{/if}
-		</Button>
 	</div>
 </Card>
