@@ -21,7 +21,9 @@
 		{/if}
 	</div>
 
-	<footer class="mt-auto border-t p-4 text-center text-sm text-muted-foreground">
+	<footer
+		class="mt-auto border-t border-muted-foreground p-4 text-center text-sm text-muted-foreground"
+	>
 		<p>
 			<a href="https://github.com/ByteAtATime/remix-lite" class="underline hover:opacity-80"
 				>Fork me</a

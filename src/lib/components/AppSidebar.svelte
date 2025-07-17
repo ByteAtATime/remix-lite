@@ -26,7 +26,9 @@
 	);
 </script>
 
-<div class="flex h-full flex-col items-center gap-2 border-l bg-background p-2">
+<div
+	class="flex h-full flex-col items-center gap-2 border-l border-muted-foreground bg-background p-2"
+>
 	{#each visibleMenuItems as item (item.id)}
 		<Tooltip.Root>
 			<Tooltip.Trigger>
