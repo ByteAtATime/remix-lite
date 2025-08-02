@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { AbiFunction } from 'abitype';
 	import type { ContractResult, MemoryClient } from 'tevm';
-	import type { Address } from 'viem';
+	import type { Address, TransactionReceipt as ViemReceipt } from 'viem';
 	import { Card } from '$lib/components/ui/card';
 	import { Alert, AlertDescription } from '$lib/components/ui/alert';
 	import { Badge } from '$lib/components/ui/badge';
@@ -11,6 +11,8 @@
 	import FunctionParameters from './FunctionParameters.svelte';
 	import TransactionReceipt from './TransactionReceipt.svelte';
 	import { getEditorState } from '$lib/stores/editor.svelte';
+	import { getWalletState } from '$lib/stores/wallet.svelte';
+	import { toast } from 'svelte-sonner';
 
 	type Props = {
 		func: AbiFunction;
@@ -20,14 +22,15 @@
 
 	let { func, address, client }: Props = $props();
 
-	const selectedAccount = $derived(getEditorState().selectedAccount);
+	const editorState = $derived(getEditorState());
+	const walletState = $derived(getWalletState());
 
 	let args = $state<Record<string, unknown> & { value?: bigint }>({});
 	let result = $state<string[]>([]);
 	let error = $state<string | null>(null);
 	let isLoading = $state(false);
 	let hasInteracted = $state(false);
-	let txReceipt = $state<ContractResult | null>(null);
+	let txReceipt = $state<ContractResult | ViemReceipt | null>(null);
 
 	$effect(() => {
 		if (func) {
@@ -38,23 +41,48 @@
 	});
 
 	const executeTransaction = async () => {
+		const functionArgs = func.inputs.map((input, i) => args[input.name || `param_${i}`]);
+		const value = func.stateMutability === 'payable' ? (args['value'] ?? 0n) : 0n;
+
 		try {
-			const txReciept_ = await client.tevmContract({
-				abi: [func],
-				to: address,
-				from: selectedAccount,
-				functionName: func.name,
-				args: func.inputs.map((input, i) => args[input.name || `param_${i}`]),
-				value: func.stateMutability === 'payable' ? (args['value'] ?? 0n) : 0n,
-				addToBlockchain: true
-			});
-			txReceipt = txReciept_;
+			if (walletState.isConnected && walletState.walletClient && walletState.publicClient) {
+				const hash = await walletState.walletClient.writeContract({
+					address,
+					abi: [func],
+					functionName: func.name,
+					args: functionArgs,
+					value
+				});
+				toast.info('Transaction sent...', { description: hash });
+				const receipt = await walletState.publicClient.waitForTransactionReceipt({ hash });
+				if (receipt.status === 'reverted') {
+					throw new Error('Transaction reverted');
+				}
+				txReceipt = receipt;
+				toast.success('Transaction confirmed!');
+			} else {
+				const tevmReceipt = await client.tevmContract({
+					abi: [func],
+					to: address,
+					from: editorState.selectedAccount,
+					functionName: func.name,
+					args: functionArgs,
+					value: value,
+					addToBlockchain: true
+				});
+				if (tevmReceipt.errors) {
+					throw tevmReceipt.errors[0];
+				}
+				txReceipt = tevmReceipt;
+			}
 			error = null;
 			result = ['Transaction successful'];
 		} catch (err) {
-			error = err instanceof Error ? err.message : String(err);
+			const errorMessage = err instanceof Error ? err.message : String(err);
+			error = errorMessage;
 			result = [];
 			txReceipt = null;
+			toast.error('Transaction failed', { description: errorMessage });
 		}
 	};
 
@@ -65,7 +93,6 @@
 		result = [];
 		txReceipt = null;
 		await executeTransaction();
-		await new Promise((resolve) => setTimeout(resolve, 500));
 		isLoading = false;
 	};
 </script>
@@ -77,22 +104,22 @@
 	</div>
 {/snippet}
 
-{#snippet errorView(error: string)}
+{#snippet errorView(errorMsg: string)}
 	<Alert variant="destructive" class="mt-4">
 		<XCircle class="h-4 w-4" />
-		<AlertDescription>{error}</AlertDescription>
+		<AlertDescription>{errorMsg}</AlertDescription>
 	</Alert>
 {/snippet}
 
-{#snippet successView(txReceipt: ContractResult | null)}
+{#snippet successView(receipt: ContractResult | ViemReceipt | null)}
 	<div class="mt-4 space-y-2 rounded-lg border p-4">
 		<div class="mb-2 flex items-center gap-2">
 			<CheckCircle2 class="h-4 w-4 text-green-500" />
 			<span class="text-sm font-medium">Transaction Successful</span>
 		</div>
 
-		{#if txReceipt}
-			<TransactionReceipt receipt={txReceipt} />
+		{#if receipt}
+			<TransactionReceipt {receipt} />
 		{/if}
 	</div>
 {/snippet}

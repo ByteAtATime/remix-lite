@@ -3,10 +3,12 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Coins, FlaskConical } from 'lucide-svelte';
 	import { getAppSettings } from '$lib/stores/settings.svelte';
+	import { getWalletState } from '$lib/stores/wallet.svelte';
 
 	let { activeTab = $bindable() }: { activeTab: 'interact' | 'token' } = $props();
 
 	const settings = $derived(getAppSettings());
+	const wallet = $derived(getWalletState());
 
 	const menuItems = [
 		{
@@ -22,8 +24,16 @@
 	];
 
 	const visibleMenuItems = $derived(
-		settings.advancedMode ? menuItems : menuItems.filter((item) => item.id === 'interact')
+		settings.advancedMode && !wallet.isConnected
+			? menuItems
+			: menuItems.filter((item) => item.id === 'interact')
 	);
+
+	$effect(() => {
+		if (wallet.isConnected) {
+			activeTab = 'interact';
+		}
+	});
 </script>
 
 <div class="flex h-full flex-col items-center gap-2 bg-muted p-2">

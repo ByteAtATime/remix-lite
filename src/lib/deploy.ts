@@ -7,6 +7,8 @@ import {
 	extractContractInfo,
 	updateEditorState
 } from '$lib/stores/editor.svelte';
+import { getWalletState } from '$lib/stores/wallet.svelte';
+import { toast } from 'svelte-sonner';
 
 let compilerWorker: Worker | undefined;
 const COMPILER_URL = 'https://binaries.soliditylang.org/bin/soljson-v0.8.29+commit.ab55807c.js';
@@ -132,50 +134,74 @@ export async function compileCode() {
 
 export async function deployContract(constructorArgs?: unknown[]) {
 	try {
-		updateEditorState({ isDeploying: true });
+		updateEditorState({ isDeploying: true, deploymentStatus: 'Starting...' });
 
 		const compileSuccess = await compileCode();
 		if (!compileSuccess) {
+			updateEditorState({ isDeploying: false });
 			return;
 		}
 		const { compiledAbi, compiledBytecode } = getEditorState();
 
 		if (!compiledAbi || !compiledBytecode) {
 			updateEditorState({
-				deploymentStatus: 'Error: Compilation failed, cannot deploy.'
+				deploymentStatus: 'Error: Compilation failed, cannot deploy.',
+				isDeploying: false
 			});
 			return;
 		}
 
 		updateEditorState({ deploymentStatus: 'Deploying...' });
 
-		const deployResult = await client.tevmDeploy({
-			abi: compiledAbi,
-			bytecode: `0x${compiledBytecode}`,
-			addToBlockchain: true,
-			args: constructorArgs
-		});
+		const { isConnected, walletClient, publicClient } = getWalletState();
 
-		if (deployResult.errors && deployResult.errors.length > 0) {
-			console.error('Deployment errors:', deployResult.errors);
-			updateEditorState({
-				deploymentStatus: `Deployment Error: ${deployResult.errors[0].message}`
+		if (isConnected && walletClient && publicClient) {
+			const hash = await walletClient.deployContract({
+				abi: compiledAbi,
+				bytecode: `0x${compiledBytecode}`,
+				args: constructorArgs
 			});
-			return;
-		}
-
-		const deployedAddress = deployResult.createdAddress;
-
-		if (!deployedAddress) {
-			console.error('Deployment failed, no address returned', deployResult);
-			updateEditorState({
-				deploymentStatus: 'Error: Deployment failed, no address returned'
+			toast.info('Deployment transaction sent...', { description: hash });
+			const receipt = await publicClient.waitForTransactionReceipt({ hash });
+			if (receipt.status === 'reverted') {
+				toast.error('Deployment transaction reverted');
+				updateEditorState({ deploymentStatus: 'Deployment failed: transaction reverted.' });
+				return;
+			}
+			const deployedAddress = receipt.contractAddress;
+			if (deployedAddress) {
+				setContract({ address: deployedAddress, abi: compiledAbi });
+				updateEditorState({ deploymentStatus: `Deployed successfully at: ${deployedAddress}` });
+				toast.success('Contract deployed!', { description: deployedAddress });
+			} else {
+				updateEditorState({ deploymentStatus: 'Error: Deployment failed, no address returned' });
+			}
+		} else {
+			const deployResult = await client.tevmDeploy({
+				abi: compiledAbi,
+				bytecode: `0x${compiledBytecode}`,
+				addToBlockchain: true,
+				args: constructorArgs
 			});
-			return;
-		}
 
-		setContract({ address: deployedAddress, abi: compiledAbi });
-		updateEditorState({ deploymentStatus: `Deployed successfully at: ${deployedAddress}` });
+			if (deployResult.errors && deployResult.errors.length > 0) {
+				console.error('Deployment errors:', deployResult.errors);
+				updateEditorState({
+					deploymentStatus: `Deployment Error: ${deployResult.errors[0].message}`
+				});
+				return;
+			}
+
+			const deployedAddress = deployResult.createdAddress;
+			if (deployedAddress) {
+				setContract({ address: deployedAddress, abi: compiledAbi });
+				updateEditorState({ deploymentStatus: `Deployed successfully at: ${deployedAddress}` });
+			} else {
+				updateEditorState({
+					deploymentStatus: 'Error: Deployment failed, no address returned'
+				});
+			}
+		}
 	} catch (error) {
 		console.error('Deployment failed:', error);
 		const message =
@@ -185,6 +211,7 @@ export async function deployContract(constructorArgs?: unknown[]) {
 					? String(error.message)
 					: 'An unknown error occurred';
 		updateEditorState({ deploymentStatus: `Error: ${message}` });
+		toast.error('Deployment failed', { description: message });
 	} finally {
 		updateEditorState({ isDeploying: false });
 	}
