@@ -62,12 +62,12 @@
 	$effect(() => {
 		if (walletState.isConnected && walletState.publicClient) {
 			const unwatch = walletState.publicClient.watchBlockNumber({
-				onBlockNumber: () => untrack(fetchData)
+				onBlockNumber: fetchData
 			});
 			return () => unwatch();
 		} else {
 			const unwatch = client.watchBlockNumber({
-				onBlockNumber: () => untrack(fetchData)
+				onBlockNumber: fetchData
 			});
 			return () => unwatch();
 		}
