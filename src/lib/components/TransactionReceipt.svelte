@@ -1,26 +1,18 @@
 <script lang="ts">
 	import type { ContractResult } from 'tevm';
 	import EventLog from './events/EventLog.svelte';
-	import { parseEventLogs, type Log, type TransactionReceipt as ViemReceipt } from 'viem';
+	import { parseEventLogs, type Log } from 'viem';
 	import { getContractAbi } from '$lib/stores/contract.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Alert, AlertDescription } from './ui/alert';
 	import { AlertCircle } from 'lucide-svelte';
 
 	type Props = {
-		receipt: ContractResult | ViemReceipt;
+		receipt: ContractResult;
 	};
 
 	let { receipt }: Props = $props();
 	let abi = $derived(getContractAbi());
-
-	const isTevmReceipt = 'executionGasUsed' in receipt;
-
-	const gasUsed = isTevmReceipt ? receipt.executionGasUsed : receipt.gasUsed;
-	const totalGasSpent = isTevmReceipt
-		? receipt.totalGasSpent
-		: receipt.gasUsed * (receipt.effectiveGasPrice ?? 0n);
-	const gasLimit = isTevmReceipt ? receipt.gas : undefined;
 
 	const logs = $derived(
 		parseEventLogs({
@@ -37,7 +29,7 @@
 				<Card.Title class="text-xl">Gas Used</Card.Title>
 			</Card.Header>
 			<Card.Content class="pt-4">
-				<p class="text-lg font-semibold">{gasUsed.toLocaleString()}</p>
+				<p class="text-lg font-semibold">{receipt.executionGasUsed.toLocaleString()}</p>
 				<Card.Description>Actual gas consumed</Card.Description>
 			</Card.Content>
 		</Card.Root>
@@ -46,7 +38,7 @@
 				<Card.Title class="text-xl">Total Gas Spent</Card.Title>
 			</Card.Header>
 			<Card.Content class="pt-4">
-				<p class="text-lg font-semibold">{totalGasSpent?.toLocaleString()}</p>
+				<p class="text-lg font-semibold">{receipt.totalGasSpent?.toLocaleString()}</p>
 				<Card.Description>Including unused gas</Card.Description>
 			</Card.Content>
 		</Card.Root>
@@ -55,13 +47,8 @@
 				<Card.Title class="text-xl">Gas Limit</Card.Title>
 			</Card.Header>
 			<Card.Content class="pt-4">
-				{#if gasLimit}
-					<p class="text-lg font-semibold">{gasLimit.toLocaleString()}</p>
-					<Card.Description>Maximum allowed gas</Card.Description>
-				{:else}
-					<p class="text-lg font-semibold">-</p>
-					<Card.Description>Not available</Card.Description>
-				{/if}
+				<p class="text-lg font-semibold">{receipt.gas?.toLocaleString()}</p>
+				<Card.Description>Maximum allowed gas</Card.Description>
 			</Card.Content>
 		</Card.Root>
 	</div>

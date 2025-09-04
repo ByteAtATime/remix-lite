@@ -6,8 +6,6 @@
 	import { Button } from '$lib/components/ui/button';
 	import { getEditorState } from '$lib/stores/editor.svelte';
 	import Address from './Address.svelte';
-	import { getWalletState } from '$lib/stores/wallet.svelte';
-	import { untrack } from 'svelte';
 
 	type Props = {
 		variable: AbiFunction;
@@ -20,35 +18,18 @@
 	let data = $state<unknown | null>(null);
 	let isLoading = $state(false);
 
-	const editorState = $derived(getEditorState());
-	const walletState = $derived(getWalletState());
+	const selectedAccount = $derived(getEditorState().selectedAccount);
 
 	const fetchData = async () => {
-		if (isLoading) return;
 		isLoading = true;
 		try {
-			let resultData: unknown;
-
-			if (walletState.isConnected && walletState.publicClient) {
-				resultData = await walletState.publicClient.readContract({
-					address,
-					abi: [variable],
-					functionName: variable.name,
-					account: walletState.address ?? undefined
-				});
-			} else {
-				const res = await client.tevmContract({
-					abi: [variable],
-					to: address,
-					from: editorState.selectedAccount,
-					functionName: variable.name
-				});
-				if (res.errors) {
-					throw res.errors[0];
-				}
-				resultData = res.data;
-			}
-			data = resultData;
+			const result = await client.tevmContract({
+				abi: [variable],
+				to: address,
+				from: selectedAccount,
+				functionName: variable.name
+			});
+			data = result.data;
 		} catch (e) {
 			console.error('Failed to fetch data', e);
 			data = 'Error';
@@ -59,18 +40,8 @@
 
 	fetchData();
 
-	$effect(() => {
-		if (walletState.isConnected && walletState.publicClient) {
-			const unwatch = walletState.publicClient.watchBlockNumber({
-				onBlockNumber: fetchData
-			});
-			return () => unwatch();
-		} else {
-			const unwatch = client.watchBlockNumber({
-				onBlockNumber: fetchData
-			});
-			return () => unwatch();
-		}
+	client.watchBlockNumber({
+		onBlockNumber: fetchData
 	});
 
 	$effect(() => {

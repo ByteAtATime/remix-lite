@@ -9,7 +9,6 @@
 	import { Button } from '$lib/components/ui/button';
 	import FunctionParameters from './FunctionParameters.svelte';
 	import { getEditorState } from '$lib/stores/editor.svelte';
-	import { getWalletState } from '$lib/stores/wallet.svelte';
 
 	type Props = {
 		func: AbiFunction;
@@ -25,8 +24,7 @@
 	let isLoading = $state(false);
 	let hasInteracted = $state(false);
 
-	const editorState = $derived(getEditorState());
-	const walletState = $derived(getWalletState());
+	const selectedAccount = $derived(getEditorState().selectedAccount);
 
 	$effect(() => {
 		if (func) {
@@ -43,30 +41,14 @@
 	}
 
 	async function fetchResults() {
-		const functionArgs = func.inputs.map((input, i) => args[input.name || `param_${i}`]);
 		try {
-			let data: unknown;
-			if (walletState.isConnected && walletState.publicClient) {
-				data = await walletState.publicClient.readContract({
-					address,
-					abi: [func],
-					functionName: func.name,
-					args: functionArgs,
-					account: walletState.address ?? undefined
-				});
-			} else {
-				const res = await client.tevmContract({
-					abi: [func],
-					to: address,
-					functionName: func.name,
-					args: functionArgs,
-					from: editorState.selectedAccount
-				});
-				if (res.errors) {
-					throw res.errors[0];
-				}
-				data = res.data;
-			}
+			const { data } = await client.tevmContract({
+				abi: [func],
+				to: address,
+				functionName: func.name,
+				args: func.inputs.map((input, i) => args[input.name || `param_${i}`]),
+				from: selectedAccount
+			});
 
 			result = Array.isArray(data) ? data : [data];
 			error = null;
