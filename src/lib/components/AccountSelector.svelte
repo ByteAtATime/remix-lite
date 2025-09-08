@@ -57,8 +57,7 @@
 		name="account-selector"
 		value={selectedAccount}
 		type="single"
-		onValueChange={(value) =>
-			updateEditorState({ selectedAccount: value[0] as Address | undefined })}
+		onValueChange={(value) => updateEditorState({ selectedAccount: value as Address | undefined })}
 	>
 		<Select.Trigger
 			class="w-full truncate rounded-full border-none bg-accent px-4 text-accent-foreground"
