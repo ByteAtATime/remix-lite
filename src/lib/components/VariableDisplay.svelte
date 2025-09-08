@@ -6,6 +6,8 @@
 	import { Button } from '$lib/components/ui/button';
 	import { getEditorState } from '$lib/stores/editor.svelte';
 	import Address from './Address.svelte';
+	import { getWalletState } from '$lib/stores/wallet.svelte';
+	import { encodeFunctionData, decodeFunctionResult } from 'viem';
 
 	type Props = {
 		variable: AbiFunction;
@@ -19,17 +21,35 @@
 	let isLoading = $state(false);
 
 	const selectedAccount = $derived(getEditorState().selectedAccount);
+	const wallet = $derived(getWalletState());
 
 	const fetchData = async () => {
 		isLoading = true;
 		try {
-			const result = await client.tevmContract({
-				abi: [variable],
-				to: address,
-				from: selectedAccount,
-				functionName: variable.name
-			});
-			data = result.data;
+			if (wallet.isConnected && wallet.publicClient) {
+				const call = await wallet.publicClient.call({
+					to: address,
+					data: encodeFunctionData({
+						abi: [variable],
+						functionName: variable.name
+					}),
+					account: wallet.address ?? undefined
+				});
+				const decoded = decodeFunctionResult({
+					abi: [variable],
+					functionName: variable.name,
+					data: call.data ?? '0x'
+				});
+				data = decoded as unknown;
+			} else {
+				const result = await client.tevmContract({
+					abi: [variable],
+					to: address,
+					from: selectedAccount,
+					functionName: variable.name
+				});
+				data = result.data;
+			}
 		} catch (e) {
 			console.error('Failed to fetch data', e);
 			data = 'Error';

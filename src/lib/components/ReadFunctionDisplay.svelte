@@ -9,6 +9,8 @@
 	import { Button } from '$lib/components/ui/button';
 	import FunctionParameters from './FunctionParameters.svelte';
 	import { getEditorState } from '$lib/stores/editor.svelte';
+	import { getWalletState } from '$lib/stores/wallet.svelte';
+	import { encodeFunctionData, decodeFunctionResult } from 'viem';
 
 	type Props = {
 		func: AbiFunction;
@@ -25,6 +27,7 @@
 	let hasInteracted = $state(false);
 
 	const selectedAccount = $derived(getEditorState().selectedAccount);
+	const wallet = $derived(getWalletState());
 
 	$effect(() => {
 		if (func) {
@@ -42,15 +45,32 @@
 
 	async function fetchResults() {
 		try {
-			const { data } = await client.tevmContract({
-				abi: [func],
-				to: address,
-				functionName: func.name,
-				args: func.inputs.map((input, i) => args[input.name || `param_${i}`]),
-				from: selectedAccount
-			});
-
-			result = Array.isArray(data) ? data : [data];
+			if (wallet.isConnected && wallet.publicClient) {
+				const call = await wallet.publicClient.call({
+					to: address,
+					data: encodeFunctionData({
+						abi: [func],
+						functionName: func.name,
+						args: func.inputs.map((input, i) => args[input.name || `param_${i}`])
+					}),
+					account: wallet.address ?? undefined
+				});
+				const decoded = decodeFunctionResult({
+					abi: [func],
+					functionName: func.name,
+					data: call.data ?? '0x'
+				});
+				result = Array.isArray(decoded) ? decoded : [decoded];
+			} else {
+				const { data } = await client.tevmContract({
+					abi: [func],
+					to: address,
+					functionName: func.name,
+					args: func.inputs.map((input, i) => args[input.name || `param_${i}`]),
+					from: selectedAccount
+				});
+				result = Array.isArray(data) ? data : [data];
+			}
 			error = null;
 		} catch (err) {
 			error = err instanceof Error ? err.message : String(err);

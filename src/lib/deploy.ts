@@ -7,6 +7,8 @@ import {
 	extractContractInfo,
 	updateEditorState
 } from '$lib/stores/editor.svelte';
+import { getWalletState } from '$lib/stores/wallet.svelte';
+import { encodeDeployData } from 'viem';
 
 let compilerWorker: Worker | undefined;
 const COMPILER_URL = 'https://binaries.soliditylang.org/bin/soljson-v0.8.29+commit.ab55807c.js';
@@ -102,8 +104,8 @@ export async function compileCode() {
 
 		const abi = contractArtifact.abi as Abi;
 		const bytecode = contractArtifact.evm.bytecode.object;
-		const devdoc = contractArtifact.devdoc;
-		const userdoc = contractArtifact.userdoc;
+		const devdoc = contractArtifact.devdoc as unknown as import('$lib/types').DevDoc | undefined;
+		const userdoc = contractArtifact.userdoc as unknown as import('$lib/types').UserDoc | undefined;
 
 		if (!abi || !bytecode) {
 			updateEditorState({
@@ -149,33 +151,71 @@ export async function deployContract(constructorArgs?: unknown[]) {
 
 		updateEditorState({ deploymentStatus: 'Deploying...' });
 
-		const deployResult = await client.tevmDeploy({
-			abi: compiledAbi,
-			bytecode: `0x${compiledBytecode}`,
-			addToBlockchain: true,
-			args: constructorArgs
-		});
+		const wallet = getWalletState();
+		if (wallet.isConnected && wallet.walletClient && wallet.publicClient) {
+			try {
+				const data = encodeDeployData({
+					abi: compiledAbi,
+					bytecode: `0x${compiledBytecode}` as `0x${string}`,
+					args: (constructorArgs ?? []) as unknown[]
+				});
 
-		if (deployResult.errors && deployResult.errors.length > 0) {
-			console.error('Deployment errors:', deployResult.errors);
-			updateEditorState({
-				deploymentStatus: `Deployment Error: ${deployResult.errors[0].message}`
+				const hash = await wallet.walletClient.sendTransaction({
+					chain: wallet.chain ?? undefined,
+					account: wallet.address!,
+					data
+				});
+
+				const receipt = await wallet.publicClient.waitForTransactionReceipt({ hash });
+				const deployedAddress = receipt.contractAddress;
+
+				if (!deployedAddress) {
+					console.error('Deployment failed, no contract address in receipt', receipt);
+					updateEditorState({
+						deploymentStatus: 'Error: Deployment failed, no contract address in receipt'
+					});
+					return;
+				}
+
+				setContract({ address: deployedAddress, abi: compiledAbi });
+				updateEditorState({
+					deploymentStatus: `Deployed successfully at: ${deployedAddress}`
+				});
+			} catch (err) {
+				console.error('Live deployment failed:', err);
+				const message = err instanceof Error ? err.message : String(err);
+				updateEditorState({ deploymentStatus: `Deployment Error: ${message}` });
+				return;
+			}
+		} else {
+			const deployResult = await client.tevmDeploy({
+				abi: compiledAbi,
+				bytecode: `0x${compiledBytecode}`,
+				addToBlockchain: true,
+				args: constructorArgs
 			});
-			return;
+
+			if (deployResult.errors && deployResult.errors.length > 0) {
+				console.error('Deployment errors:', deployResult.errors);
+				updateEditorState({
+					deploymentStatus: `Deployment Error: ${deployResult.errors[0].message}`
+				});
+				return;
+			}
+
+			const deployedAddress = deployResult.createdAddress;
+
+			if (!deployedAddress) {
+				console.error('Deployment failed, no address returned', deployResult);
+				updateEditorState({
+					deploymentStatus: 'Error: Deployment failed, no address returned'
+				});
+				return;
+			}
+
+			setContract({ address: deployedAddress, abi: compiledAbi });
+			updateEditorState({ deploymentStatus: `Deployed successfully at: ${deployedAddress}` });
 		}
-
-		const deployedAddress = deployResult.createdAddress;
-
-		if (!deployedAddress) {
-			console.error('Deployment failed, no address returned', deployResult);
-			updateEditorState({
-				deploymentStatus: 'Error: Deployment failed, no address returned'
-			});
-			return;
-		}
-
-		setContract({ address: deployedAddress, abi: compiledAbi });
-		updateEditorState({ deploymentStatus: `Deployed successfully at: ${deployedAddress}` });
 	} catch (error) {
 		console.error('Deployment failed:', error);
 		const message =

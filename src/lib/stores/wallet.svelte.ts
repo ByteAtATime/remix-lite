@@ -13,6 +13,12 @@ import {
 import * as allChains from 'viem/chains';
 import { toast } from 'svelte-sonner';
 
+declare global {
+	interface Window {
+		ethereum?: EIP1193Provider;
+	}
+}
+
 export const supportedChains: Record<number, Chain> = {
 	[allChains.sepolia.id]: allChains.sepolia,
 	[allChains.hardhat.id]: allChains.hardhat,

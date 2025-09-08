@@ -209,7 +209,12 @@ self.onmessage = async (e: MessageEvent<{ code: string; id: string; fileName?: s
 		const compile = Module.cwrap('solidity_compile', 'string', ['string', 'number']);
 
 		const sources: ContractSources = {};
-		await resolveImports(fileName, code, sources, openzeppelinContracts);
+		await resolveImports(
+			fileName,
+			code,
+			sources,
+			openzeppelinContracts as Record<string, () => Promise<string>>
+		);
 		console.log(sources);
 
 		const compilerInput: CompilerInput = {

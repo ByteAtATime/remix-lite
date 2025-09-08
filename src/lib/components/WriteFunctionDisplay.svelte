@@ -11,6 +11,8 @@
 	import FunctionParameters from './FunctionParameters.svelte';
 	import TransactionReceipt from './TransactionReceipt.svelte';
 	import { getEditorState } from '$lib/stores/editor.svelte';
+	import { getWalletState } from '$lib/stores/wallet.svelte';
+	import { encodeFunctionData } from 'viem';
 
 	type Props = {
 		func: AbiFunction;
@@ -21,6 +23,7 @@
 	let { func, address, client }: Props = $props();
 
 	const selectedAccount = $derived(getEditorState().selectedAccount);
+	const wallet = $derived(getWalletState());
 
 	let args = $state<Record<string, unknown> & { value?: bigint }>({});
 	let result = $state<string[]>([]);
@@ -39,18 +42,37 @@
 
 	const executeTransaction = async () => {
 		try {
-			const txReciept_ = await client.tevmContract({
-				abi: [func],
-				to: address,
-				from: selectedAccount,
-				functionName: func.name,
-				args: func.inputs.map((input, i) => args[input.name || `param_${i}`]),
-				value: func.stateMutability === 'payable' ? (args['value'] ?? 0n) : 0n,
-				addToBlockchain: true
-			});
-			txReceipt = txReciept_;
-			error = null;
-			result = ['Transaction successful'];
+			if (wallet.isConnected && wallet.walletClient) {
+				const data = encodeFunctionData({
+					abi: [func],
+					functionName: func.name,
+					args: func.inputs.map((input, i) => args[input.name || `param_${i}`])
+				});
+				const hash = await wallet.walletClient.sendTransaction({
+					chain: wallet.chain ?? undefined,
+					to: address,
+					data,
+					account: selectedAccount!,
+					value: func.stateMutability === 'payable' ? (args['value'] ?? 0n) : 0n
+				});
+
+				txReceipt = null;
+				error = null;
+				result = [`Tx sent: ${hash}`];
+			} else {
+				const txReciept_ = await client.tevmContract({
+					abi: [func],
+					to: address,
+					from: selectedAccount,
+					functionName: func.name,
+					args: func.inputs.map((input, i) => args[input.name || `param_${i}`]),
+					value: func.stateMutability === 'payable' ? (args['value'] ?? 0n) : 0n,
+					addToBlockchain: true
+				});
+				txReceipt = txReciept_;
+				error = null;
+				result = ['Transaction successful'];
+			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : String(err);
 			result = [];
