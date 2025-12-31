@@ -9,8 +9,11 @@
 	import { getAppSettings } from '$lib/stores/settings.svelte';
 	import { IsMobile } from '$lib/hooks/is-mobile.svelte';
 	import * as Tabs from '$lib/components/ui/tabs/index.js';
+	import { parseUrlParams, fetchFromUrl, fetchFromGist } from '$lib/url-params';
+	import { toast } from 'svelte-sonner';
 
 	let activeTab = $state<'interact' | 'token'>('interact');
+	let isLoadingCode = $state(false);
 
 	const settings = $derived(getAppSettings());
 	const isMobile = new IsMobile();
@@ -62,28 +65,77 @@
 		}
 	}
 
-	const loadCodeFromQueryParam = () => {
-		if (page.url.hash) {
-			const match = page.url.hash.match(/code=([^&]+)/);
-			if (match && match[1]) {
-				try {
-					const decodedCode = decodeURIComponent(atob(match[1]));
-					updateEditorState({ code: decodedCode });
+	const loadFromUrlParams = async () => {
+		if (!page.url.hash) return;
 
-					const newUrl = new URL(window.location.href);
-					newUrl.hash = '';
-					window.history.replaceState({}, '', newUrl.toString());
-				} catch (error) {
-					console.error('Failed to decode base64 code from URL:', error);
-				}
+		const params = parseUrlParams(page.url.hash);
+
+		if (params.code) {
+			updateEditorState({ code: params.code });
+			clearUrlHash();
+			return;
+		}
+
+		if (params.url) {
+			isLoadingCode = true;
+			const loadingToast = toast.loading('Loading code from URL...');
+			try {
+				const code = await fetchFromUrl(params.url);
+				updateEditorState({ code });
+				toast.success('Loaded code from URL', { id: loadingToast });
+			} catch (error) {
+				console.error('Failed to load code from URL:', error);
+				toast.error('Failed to load code from URL', { id: loadingToast });
+			} finally {
+				isLoadingCode = false;
 			}
+			clearUrlHash();
+			return;
+		}
+
+		if (params.gist) {
+			isLoadingCode = true;
+			const loadingToast = toast.loading('Loading gist...');
+			try {
+				const files = await fetchFromGist(params.gist);
+				if (files.length > 0) {
+					updateEditorState({ code: files[0].content });
+					toast.success(`Loaded ${files[0].filename} from gist`, { id: loadingToast });
+				}
+			} catch (error) {
+				console.error('Failed to load gist:', error);
+				toast.error('Failed to load gist', { id: loadingToast });
+			} finally {
+				isLoadingCode = false;
+			}
+			clearUrlHash();
+			return;
 		}
 	};
 
+	const clearUrlHash = () => {
+		const newUrl = new URL(window.location.href);
+		newUrl.hash = '';
+		window.history.replaceState({}, '', newUrl.toString());
+	};
+
 	afterNavigate(() => {
-		loadCodeFromQueryParam();
+		loadFromUrlParams();
 	});
 </script>
+
+{#if isLoadingCode}
+	<div
+		class="absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
+	>
+		<div class="flex flex-col items-center gap-3">
+			<div
+				class="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"
+			></div>
+			<span class="text-sm text-muted-foreground">Loading code...</span>
+		</div>
+	</div>
+{/if}
 
 {#if isMobile.current}
 	<Tabs.Root class="flex h-full w-full flex-col" bind:value={activeTab}>
